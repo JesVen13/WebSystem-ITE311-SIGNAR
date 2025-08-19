@@ -16,7 +16,7 @@ class Migrations extends BaseConfig
      * You should enable migrations whenever you intend to do a schema migration
      * and disable it back when you're done.
      */
-    public bool $enabled = true;
+    public $enabled = true;
 
     /**
      * --------------------------------------------------------------------------
@@ -27,7 +27,7 @@ class Migrations extends BaseConfig
      * When migrations runs it will store in a database table which migration
      * files have already been run.
      */
-    public string $table = 'migrations';
+    public $type = 'sequential';
 
     /**
      * --------------------------------------------------------------------------
