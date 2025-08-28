@@ -6,23 +6,23 @@ use CodeIgniter\Database\Migration;
 
 class CreateLessonsTable extends Migration
 {
-   public function up()
+   public function up(): void
 {
-    $this->forge->addField([
+    $this->forge->addField(fields: [
         'id'        => ['type' => 'INT', 'unsigned' => true, 'auto_increment' => true],
         'course_id' => ['type' => 'INT', 'unsigned' => true],
         'title'     => ['type' => 'VARCHAR', 'constraint' => 200],
         'content'   => ['type' => 'TEXT'],
         'created_at'=> ['type' => 'DATETIME', 'null' => true],
     ]);
-    $this->forge->addKey('id', true);
-    $this->forge->addForeignKey('course_id', 'courses', 'id', 'CASCADE', 'CASCADE');
-    $this->forge->createTable('lessons');
+    $this->forge->addKey(key: 'id', primary: true);
+    $this->forge->addForeignKey(fieldName: 'course_id', tableName: 'courses', tableField: 'id', onUpdate: 'CASCADE', onDelete: 'CASCADE');
+    $this->forge->createTable(table: 'lessons');
 }
 
-public function down()
+public function down(): void
 {
-    $this->forge->dropTable('lessons');
+    $this->forge->dropTable(tableName: 'lessons');
 }
 
 }

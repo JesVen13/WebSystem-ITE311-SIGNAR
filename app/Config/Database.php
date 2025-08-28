@@ -26,7 +26,7 @@ class Database extends Config
      */
     public array $default = [
         'DSN'      => '',
-        'hostname' => '127.0.0.1',   // Use 127.0.0.1 instead of localhost (faster + avoids socket issues)
+        'hostname' => '127.0.0.1', 
         'username' => 'root',
         'password' => '',
         'database' => 'lms_signar',
@@ -80,7 +80,6 @@ class Database extends Config
     {
         parent::__construct();
 
-        // Force "tests" DB group when in testing environment
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }

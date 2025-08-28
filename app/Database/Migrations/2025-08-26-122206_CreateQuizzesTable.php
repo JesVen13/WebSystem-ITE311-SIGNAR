@@ -6,22 +6,22 @@ use CodeIgniter\Database\Migration;
 
 class CreateQuizzesTable extends Migration
 {
-   public function up()
+   public function up(): void
 {
-    $this->forge->addField([
+    $this->forge->addField(fields: [
         'id'        => ['type' => 'INT', 'unsigned' => true, 'auto_increment' => true],
         'lesson_id' => ['type' => 'INT', 'unsigned' => true],
         'question'  => ['type' => 'TEXT'],
         'answer'    => ['type' => 'VARCHAR', 'constraint' => 255],
     ]);
-    $this->forge->addKey('id', true);
-    $this->forge->addForeignKey('lesson_id', 'lessons', 'id', 'CASCADE', 'CASCADE');
-    $this->forge->createTable('quizzes');
+    $this->forge->addKey(key: 'id', primary: true);
+    $this->forge->addForeignKey(fieldName: 'lesson_id', tableName: 'lessons', tableField: 'id', onUpdate: 'CASCADE', onDelete: 'CASCADE');
+    $this->forge->createTable(table: 'quizzes');
 }
 
-public function down()
+public function down(): void
 {
-    $this->forge->dropTable('quizzes');
+    $this->forge->dropTable(tableName: 'quizzes');
 }
 
 }

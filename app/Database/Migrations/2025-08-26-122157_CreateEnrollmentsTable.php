@@ -6,23 +6,23 @@ use CodeIgniter\Database\Migration;
 
 class CreateEnrollmentsTable extends Migration
 {
-   public function up()
+   public function up(): void
 {
-    $this->forge->addField([
+    $this->forge->addField(fields: [
         'id'        => ['type' => 'INT', 'unsigned' => true, 'auto_increment' => true],
         'user_id'   => ['type' => 'INT', 'unsigned' => true],
         'course_id' => ['type' => 'INT', 'unsigned' => true],
         'created_at'=> ['type' => 'DATETIME', 'null' => true],
     ]);
-    $this->forge->addKey('id', true);
-    $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-    $this->forge->addForeignKey('course_id', 'courses', 'id', 'CASCADE', 'CASCADE');
-    $this->forge->createTable('enrollments');
+    $this->forge->addKey(key: 'id', primary: true);
+    $this->forge->addForeignKey(fieldName: 'user_id', tableName: 'users', tableField: 'id', onUpdate: 'CASCADE', onDelete: 'CASCADE');
+    $this->forge->addForeignKey(fieldName: 'course_id', tableName: 'courses', tableField: 'id', onUpdate: 'CASCADE', onDelete: 'CASCADE');
+    $this->forge->createTable(table: 'enrollments');
 }
 
-public function down()
+public function down(): void
 {
-    $this->forge->dropTable('enrollments');
+    $this->forge->dropTable(tableName: 'enrollments');
 }
 
 }

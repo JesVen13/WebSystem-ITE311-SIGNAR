@@ -6,9 +6,9 @@ use CodeIgniter\Database\Migration;
 
 class CreateCoursesTable extends Migration
 {
-   public function up()
+   public function up(): void
 {
-    $this->forge->addField([
+    $this->forge->addField(fields: [
         'id'          => ['type' => 'INT', 'unsigned' => true, 'auto_increment' => true],
         'title'       => ['type' => 'VARCHAR', 'constraint' => 200],
         'description' => ['type' => 'TEXT'],
@@ -16,9 +16,9 @@ class CreateCoursesTable extends Migration
         'created_at'  => ['type' => 'DATETIME', 'null' => true],
         'updated_at'  => ['type' => 'DATETIME', 'null' => true],
     ]);
-    $this->forge->addKey('id', true);
-    $this->forge->addForeignKey('instructor_id', 'users', 'id', 'CASCADE', 'CASCADE');
-    $this->forge->createTable('courses');
+    $this->forge->addKey(key: 'id', primary: true);
+    $this->forge->addForeignKey(fieldName: 'instructor_id', tableName: 'users', tableField: 'id', onUpdate: 'CASCADE', onDelete: 'CASCADE');
+    $this->forge->createTable(table: 'courses');
 }
 
 public function down()
