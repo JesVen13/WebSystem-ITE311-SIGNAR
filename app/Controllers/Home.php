@@ -6,7 +6,7 @@ class Home extends BaseController
 {
     public function index()
     {
-        return view('home'); // your normal home page
+        return view('home'); //home page
     }
 
     public function about()
@@ -19,8 +19,8 @@ class Home extends BaseController
         return view('contact');
     }
 
-    public function myhome() // NEW METHOD
+    public function myLogin() 
     {
-        return view('MyHome'); // This is your custom MyHome.php view
+        return view('MyLogin'); //MyLogin.php 
     }
 }

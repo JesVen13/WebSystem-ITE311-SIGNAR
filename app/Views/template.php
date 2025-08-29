@@ -9,7 +9,7 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="<?= base_url('MyHome') ?>">Signar vs Laboratories</a>
+      <a class="navbar-brand" href="<?= base_url('MyLogin') ?>">Login</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -28,8 +28,6 @@
       </div>
     </div>
   </nav>
-
-  <!-- MAIN CONTENT -->
   <div class="container mt-5">
     <?= $this->renderSection('content') ?>
   </div>
