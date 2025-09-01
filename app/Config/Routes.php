@@ -5,8 +5,18 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');// normal home
-$routes->get('about', 'Home::about'); //About
-$routes->get('contact', 'Home::contact');//Contact
-$routes->get('MyLogin', 'Home::MyLogin');// MyLogin page
 
+// Lab 3
+$routes->get('/', 'Home::index');
+$routes->get('/about', 'Home::about');
+$routes->get('/contact', 'Home::contact');
+
+// Lab 4 
+$routes->get('/login', 'Auth::login');            
+$routes->post('/login', 'Auth::attemptLogin');  
+
+$routes->get('/register', 'Auth::register');     
+$routes->post('/register', 'Auth::store');          
+
+$routes->get('/dashboard', 'Auth::dashboard');       
+$routes->get('/logout', 'Auth::logout');         

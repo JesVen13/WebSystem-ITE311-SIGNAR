@@ -18,9 +18,4 @@ class Home extends BaseController
     {
         return view('contact');
     }
-
-    public function myLogin() 
-    {
-        return view('MyLogin'); //MyLogin.php 
-    }
 }
