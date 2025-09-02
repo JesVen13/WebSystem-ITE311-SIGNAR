@@ -21,6 +21,7 @@
 </head>
 <body>
     <div class="card p-4">
+        <a href="<?= site_url('/') ?>" class="btn btn-sm btn-outline-secondary mb-2">&larr; Back</a>
         <h2 class="text-center mb-4">Login</h2>
 
         <?php if(session()->getFlashdata('success')): ?>
