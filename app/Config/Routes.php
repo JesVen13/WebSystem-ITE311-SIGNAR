@@ -19,4 +19,4 @@ $routes->get('/register', 'Auth::register');
 $routes->post('/register', 'Auth::store');          
 
 $routes->get('/dashboard', 'Auth::dashboard');       
-$routes->get('/logout', 'Auth::logout');         
+$routes->get('/logout', 'Auth::logout');                        

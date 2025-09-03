@@ -44,11 +44,11 @@ class CreateAccountsTable extends Migration
         ]);
 
         $this->forge->addPrimaryKey('id');
-        $this->forge->createTable('accounts');
+        $this->forge->createTable('users');
     }
 
     public function down()
     {
-        $this->forge->dropTable('accounts');
+        $this->forge->dropTable('users');
     }
 }
