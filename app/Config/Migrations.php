@@ -27,7 +27,7 @@ class Migrations extends BaseConfig
      * - 'timestamp' (default): migration files use a timestamp prefix
      * - 'sequential': migration files are numbered sequentially
      */
-    public string $type = 'timestamp';
+    public string $type = 'sequential';
 
     /**
      * --------------------------------------------------------------------------
@@ -38,7 +38,7 @@ class Migrations extends BaseConfig
      * When migrations run, it will store in this database table which migration
      * files have already been run.
      */
-    public string $table = 'migrations';
+    public string $table = 'sequential_migrations';
 
     /**
      * --------------------------------------------------------------------------
