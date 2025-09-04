@@ -115,7 +115,7 @@ class Auth extends Controller
             'role' => $session->get('role'),
         ];
 
-        return view('auth/dashboard', $data);
+        return view('Views/dashboard', $data);
     }
 
     // =========================

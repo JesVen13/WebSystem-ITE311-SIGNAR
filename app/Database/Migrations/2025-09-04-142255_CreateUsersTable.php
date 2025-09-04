@@ -4,14 +4,13 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateAccountsTable extends Migration
+class CreateUsersTable extends Migration
 {
     public function up()
     {
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
-                'constraint'     => 5,  
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
@@ -33,18 +32,12 @@ class CreateAccountsTable extends Migration
                 'constraint' => ['admin', 'user'],
                 'default'    => 'user',
             ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
-            'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
         ]);
 
-        $this->forge->addPrimaryKey('id');
-        $this->forge->createTable('users');
+        $this->forge->addKey('id', true);
+        $this->forge->createTable('users', false, ['ENGINE' => 'InnoDB']);
     }
 
     public function down()

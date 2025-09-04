@@ -1,0 +1,19 @@
+ERROR - 2025-09-04 14:24:13 --> mysqli_sql_exception: Table 'users' already exists in C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Database\MySQLi\Connection.php(327): mysqli->query('CREATE TABLE `u...', 0)
+#1 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('CREATE TABLE `u...')
+#2 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('CREATE TABLE `u...')
+#3 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Database\Forge.php(570): CodeIgniter\Database\BaseConnection->query('CREATE TABLE `u...')
+#4 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\app\Database\Migrations\2025-09-04-142255_CreateUsersTable.php(40): CodeIgniter\Database\Forge->createTable('users', false, Array)
+#5 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateUsersTable->up()
+#6 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Commands\Database\MigrateRefresh.php(87): CodeIgniter\CLI\BaseCommand->call('migrate', Array)
+#11 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\Users\NNNEEENNN\Desktop\ha\WebSystem-ITE311-SIGNAR\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
