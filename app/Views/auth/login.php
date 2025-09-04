@@ -6,7 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: #f4f6f9;
+            background: #5f84bbff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,7 +21,6 @@
 </head>
 <body>
     <div class="card p-4">
-        <a href="<?= site_url('/') ?>" class="btn btn-sm btn-outline-secondary mb-2">&larr; Back</a>
         <h2 class="text-center mb-4">Login</h2>
 
         <?php if(session()->getFlashdata('success')): ?>
@@ -69,8 +68,9 @@
         <div class="mt-3 text-center">
             <small>Don’t have an account? <a href="<?= site_url('register') ?>">Register here</a></small>
         </div>
+        <a href="<?= site_url('/') ?>" class="btn btn-sm btn-outline-secondary mb-2">&larr; Back</a>
     </div>
-
+                    
     <script>
         function togglePassword() {
             const password = document.getElementById("password");
