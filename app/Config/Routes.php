@@ -9,14 +9,14 @@ use CodeIgniter\Router\RouteCollection;
 // Lab 3
 $routes->get('/', 'Home::index');
 $routes->get('/about', 'Home::about');
-$routes->get('/contact', 'Home::contact');
-
-// Lab 4 
+$routes->get('/contact', 'Home::contact');  
+// Lab 4
+// Authentication Routes
 $routes->get('/login', 'Auth::login');            
 $routes->post('/login', 'Auth::attemptLogin');  
-
+// Registration Routes
 $routes->get('/register', 'Auth::register');     
 $routes->post('/register', 'Auth::store');          
-
+// Protected Routes
 $routes->get('/dashboard', 'Auth::dashboard');       
 $routes->get('/logout', 'Auth::logout');                        
