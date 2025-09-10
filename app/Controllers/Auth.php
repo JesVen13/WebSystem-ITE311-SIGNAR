@@ -12,6 +12,10 @@ class Auth extends Controller
     // =========================
     public function register()
     {
+        if ($this->request->getMethod() === 'post') {
+            return $this->store();
+        }
+
         return view('auth/register');
     }
 
@@ -35,7 +39,7 @@ class Auth extends Controller
             ],
             'email' => 'required|valid_email|is_unique[users.email]', // ✅ changed to users.email
             'password' => 'required|min_length[6]',
-            'confirm_password' => 'required|matches[password]'
+            'password_confirm' => 'required|matches[password]'
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
@@ -58,6 +62,10 @@ class Auth extends Controller
     // =========================
     public function login()
     {
+        if ($this->request->getMethod() === 'post') {
+            return $this->attemptLogin();
+        }
+
         return view('auth/login');
     }
 
@@ -92,6 +100,7 @@ class Auth extends Controller
                 'role'       => $user['role'],
                 'isLoggedIn' => true,
             ]);
+            $session->setFlashdata('success', 'Welcome back, ' . $user['name'] . '!');
             return redirect()->to('/dashboard');
         }
 
@@ -115,7 +124,7 @@ class Auth extends Controller
             'role' => $session->get('role'),
         ];
 
-        return view('Views/dashboard', $data);
+        return view('dashboard', $data);
     }
 
     // =========================

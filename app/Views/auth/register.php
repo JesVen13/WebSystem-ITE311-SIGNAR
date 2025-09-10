@@ -77,13 +77,13 @@
 
             <!-- Confirm Password -->
             <div class="mb-3">
-                <label for="confirm_password" class="form-label">Confirm Password</label>
+                <label for="password_confirm" class="form-label">Confirm Password</label>
                 <input 
                     type="password" 
-                    class="form-control <?= isset($validation) && $validation->hasError('confirm_password') ? 'is-invalid' : '' ?>" 
-                    name="confirm_password" id="confirm_password" required>
-                <?php if(isset($validation) && $validation->hasError('confirm_password')): ?>
-                    <div class="invalid-feedback"><?= $validation->getError('confirm_password') ?></div>
+                    class="form-control <?= isset($validation) && $validation->hasError('password_confirm') ? 'is-invalid' : '' ?>" 
+                    name="password_confirm" id="password_confirm" required>
+                <?php if(isset($validation) && $validation->hasError('password_confirm')): ?>
+                    <div class="invalid-feedback"><?= $validation->getError('password_confirm') ?></div>
                 <?php endif; ?>
             </div>
 
