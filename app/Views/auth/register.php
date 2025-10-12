@@ -87,6 +87,21 @@
                 <?php endif; ?>
             </div>
 
+            <!-- Role -->
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select 
+                    name="role" id="role" 
+                    class="form-select <?= isset($validation) && $validation->hasError('role') ? 'is-invalid' : '' ?>" required>
+                    <option value="admin" <?= old('role')==='admin' ? 'selected' : '' ?>>Admin</option>
+                    <option value="teacher" <?= old('role')==='teacher' ? 'selected' : '' ?>>Teacher</option>
+                    <option value="student" <?= old('role')==='student' ? 'selected' : '' ?>>Student</option>
+                </select>
+                <?php if(isset($validation) && $validation->hasError('role')): ?>
+                    <div class="invalid-feedback"><?= $validation->getError('role') ?></div>
+                <?php endif; ?>
+            </div>
+
             <button type="submit" class="btn btn-success w-100">Register</button>
         </form>
 

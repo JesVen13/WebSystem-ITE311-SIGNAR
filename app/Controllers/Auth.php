@@ -38,19 +38,25 @@ class Auth extends Controller
                 ]
             ],
             'email' => 'required|valid_email|is_unique[users.email]', // ✅ changed to users.email
-            'password' => 'required|min_length[6]',
-            'password_confirm' => 'required|matches[password]'
+            'password' => 'required|min_length[8]',
+            'password_confirm' => 'required|matches[password]',
+            'role' => 'required|in_list[admin,teacher,student]'
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
             return view('auth/register', ['validation' => $validation]);
         }
 
+        // Save the selected role directly (for lab testing of multiple roles)
+        $postedRole = (string) $this->request->getPost('role');
+        $allowedRoles = ['admin', 'teacher', 'student'];
+        $roleToSave = in_array($postedRole, $allowedRoles, true) ? $postedRole : 'student';
+
         $userModel->save([
             'name'     => $this->request->getPost('name'),
             'email'    => $this->request->getPost('email'),
             'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role'     => 'user',
+            'role'     => $roleToSave,
         ]);
 
         $session->setFlashdata('success', 'Registration successful! You can login now.');
@@ -90,9 +96,23 @@ class Auth extends Controller
         $email    = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
+        // Simple login throttling: limit repeated attempts per IP+email
+        $ip = $this->request->getIPAddress();
+        $cache = \Config\Services::cache();
+        $key = 'login_attempts_' . md5($ip . '_' . strtolower((string) $email));
+        $attempts = (int) ($cache->get($key) ?? 0);
+        if ($attempts >= 5) {
+            $session->setFlashdata('error', 'Too many login attempts. Try again in 10 minutes.');
+            return redirect()->back()->withInput();
+        }
+
         $user = $userModel->where('email', $email)->first();
 
         if ($user && password_verify($password, $user['password'])) {
+            // Reset attempts on success
+            $cache->delete($key);
+            // Regenerate session ID to prevent fixation
+            $session->regenerate();
             $session->set([
                 'user_id'    => $user['id'],
                 'name'       => $user['name'],
@@ -104,6 +124,8 @@ class Auth extends Controller
             return redirect()->to('/dashboard');
         }
 
+        // Increment attempts on failure (10-minute decay)
+        $cache->save($key, $attempts + 1, 600);
         $session->setFlashdata('error', 'Invalid email or password!');
         return redirect()->back()->withInput();
     }
@@ -119,9 +141,33 @@ class Auth extends Controller
             return redirect()->to('/login');
         }
 
+        $role   = (string) $session->get('role');
+        $userId = (int) $session->get('user_id');
+
+        $db = \Config\Database::connect();
+        $roleData = [];
+
+        if ($role === 'admin') {
+            $roleData = [
+                'totalUsers'       => (int) $db->table('users')->countAllResults(),
+                'totalCourses'     => (int) $db->table('courses')->countAllResults(),
+                'totalEnrollments' => (int) $db->table('enrollments')->countAllResults(),
+            ];
+        } elseif ($role === 'teacher') {//Teacher
+            $roleData = [
+                'myCourses' => (int) $db->table('courses')->where('instructor_id', $userId)->countAllResults(),
+            ];
+        } else { // student
+            $roleData = [
+                // enrollments table uses user_id (not student_id)
+                'myEnrollments' => (int) $db->table('enrollments')->where('user_id', $userId)->countAllResults(),
+            ];
+        }
+
         $data = [
-            'name' => $session->get('name'),
-            'role' => $session->get('role'),
+            'name'     => $session->get('name'),
+            'role'     => $role,
+            'roleData' => $roleData,
         ];
 
         return view('dashboard', $data);
@@ -132,7 +178,10 @@ class Auth extends Controller
     // =========================
     public function logout()
     {
-        session()->destroy();
+        // Regenerate before destroying to mitigate fixation
+        $session = session();
+        $session->regenerate(true);
+        $session->destroy();
         return redirect()->to('/login');
     }
 }

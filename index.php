@@ -4,6 +4,51 @@ use Config\Paths;
 
 /*
  *---------------------------------------------------------------
+ * SECURITY: BLOCK DIRECTORY TRAVERSAL ATTEMPTS
+ *---------------------------------------------------------------
+ */
+
+// Check for directory traversal attempts in the request URI
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$queryString = $_SERVER['QUERY_STRING'] ?? '';
+
+// Patterns to detect directory traversal attempts
+$traversalPatterns = [
+    '..',
+    '%2e%2e',
+    '%2E%2E',
+    '%252e%252e',
+    '%252E%252E',
+    '..%2f',
+    '..%5c',
+    '%2e%2e%2f',
+    '%2e%2e%5c'
+];
+
+// Check both URI and query string for traversal patterns
+foreach ($traversalPatterns as $pattern) {
+    if (strpos($requestUri, $pattern) !== false || strpos($queryString, $pattern) !== false) {
+        // Log the attempt
+        error_log('Directory traversal attempt blocked: ' . $requestUri . ' Query: ' . $queryString . ' from IP: ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+        
+        // Redirect to home page
+        header('Location: /ITE311-SIGNAR/', true, 301);
+        exit;
+    }
+}
+
+// Block access to sensitive directories
+$sensitivePaths = ['/app/', '/system/', '/vendor/', '/writable/', '/tests/', '/.git/'];
+foreach ($sensitivePaths as $sensitivePath) {
+    if (strpos($requestUri, $sensitivePath) !== false) {
+        error_log('Sensitive directory access attempt blocked: ' . $requestUri . ' from IP: ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+        header('Location: /ITE311-SIGNAR/', true, 301);
+        exit;
+    }
+}
+
+/*
+ *---------------------------------------------------------------
  * CHECK PHP VERSION
  *---------------------------------------------------------------
  */

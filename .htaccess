@@ -2,6 +2,36 @@
 Options -Indexes
 
 # ----------------------------------------------------------------------
+# Security Rules - Block Directory Traversal Attacks
+# ----------------------------------------------------------------------
+
+# Block access to any path containing .. (directory traversal)
+RewriteEngine On
+
+# Block directory traversal attempts - Multiple patterns
+RewriteCond %{REQUEST_URI} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e%5c|\.\.%2f|\.\.%5c) [NC]
+RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
+
+# Block access to parent directories
+RewriteCond %{REQUEST_URI} ^/\.\./ [NC]
+RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
+
+# Block access to sensitive files and directories
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak|sql|conf)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block access to hidden files and directories
+<FilesMatch "^\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block access to system directories
+RedirectMatch 403 ^/(app|system|vendor|writable|tests)/.*
+
+# ----------------------------------------------------------------------
 # Rewrite engine
 # ----------------------------------------------------------------------
 
@@ -14,7 +44,19 @@ Options -Indexes
 	# If you installed CodeIgniter in a subfolder, you will need to
 	# change the following line to match the subfolder you need.
 	# http://httpd.apache.org/docs/current/mod/mod_rewrite.html#rewritebase
-	# RewriteBase /
+	RewriteBase /ITE311-SIGNAR/
+
+	# Security: Block directory traversal attempts - Multiple patterns
+	RewriteCond %{REQUEST_URI} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e%5c|\.\.%2f|\.\.%5c) [NC]
+	RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
+
+	# Security: Block access to sensitive paths
+	RewriteCond %{REQUEST_URI} ^/(app|system|vendor|writable|tests|\.git)/ [NC]
+	RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
+
+	# Security: Block access to parent directories
+	RewriteCond %{REQUEST_URI} ^/\.\./ [NC]
+	RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
 
 	# Redirect Trailing Slashes...
 	RewriteCond %{REQUEST_FILENAME} !-d
