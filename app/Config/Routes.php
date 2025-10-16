@@ -22,3 +22,10 @@ $routes->get('/dashboard', 'Auth::dashboard');
 $routes->get('/logout', 'Auth::logout');                        
 // Exam Tasks - Announcements
 $routes->get('/announcements', 'Announcement::index');
+// Exam Tasks - Role Dashboards (protected by RoleAuth)
+$routes->group('teacher', ['filter' => 'roleauth'], static function ($routes) {
+    $routes->get('dashboard', 'Teacher::dashboard');
+});
+$routes->group('admin', ['filter' => 'roleauth'], static function ($routes) {
+    $routes->get('dashboard', 'Admin::dashboard');
+});

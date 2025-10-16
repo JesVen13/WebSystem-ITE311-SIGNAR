@@ -121,7 +121,16 @@ class Auth extends Controller
                 'isLoggedIn' => true,
             ]);
             $session->setFlashdata('success', 'Welcome back, ' . $user['name'] . '!');
-            return redirect()->to('/dashboard');
+            // Role-based redirection
+            $role = (string) ($user['role'] ?? 'student');
+            if ($role === 'admin') {
+                return redirect()->to('/admin/dashboard');
+            }
+            if ($role === 'teacher') {
+                return redirect()->to('/teacher/dashboard');
+            }
+            // default to student announcements
+            return redirect()->to('/announcements');
         }
 
         // Increment attempts on failure (10-minute decay)
