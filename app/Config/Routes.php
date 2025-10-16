@@ -20,3 +20,5 @@ $routes->post('/register', 'Auth::store');
 // Protected Routes
 $routes->get('/dashboard', 'Auth::dashboard');       
 $routes->get('/logout', 'Auth::logout');                        
+// Exam Tasks - Announcements
+$routes->get('/announcements', 'Announcement::index');
