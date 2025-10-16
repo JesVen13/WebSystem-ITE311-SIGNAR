@@ -29,3 +29,7 @@ $routes->group('teacher', ['filter' => 'roleauth'], static function ($routes) {
 $routes->group('admin', ['filter' => 'roleauth'], static function ($routes) {
     $routes->get('dashboard', 'Admin::dashboard');
 });
+// Optional: protect student dashboard with same filter
+$routes->group('student', ['filter' => 'roleauth'], static function ($routes) {
+    $routes->get('dashboard', 'Student::dashboard');
+});

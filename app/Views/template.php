@@ -27,7 +27,17 @@
           </li>
           <?php if ($isLoggedIn): ?>
             <li class="nav-item">
-              <a class="nav-link <?= (uri_string() == 'dashboard' ? 'active' : '') ?>" href="<?= base_url('dashboard') ?>">Dashboard</a>
+              <?php 
+                $dashboardPath = 'dashboard';
+                if ($role === 'admin') {
+                  $dashboardPath = 'admin/dashboard';
+                } elseif ($role === 'teacher') {
+                  $dashboardPath = 'teacher/dashboard';
+                } elseif ($role === 'student') {
+                  $dashboardPath = 'student/dashboard';
+                }
+              ?>
+              <a class="nav-link <?= (uri_string() == $dashboardPath ? 'active' : '') ?>" href="<?= base_url($dashboardPath) ?>">Dashboard</a>
             </li>
             <?php if ($role === 'admin'): ?>
               <li class="nav-item"><a class="nav-link" href="#">User Management</a></li>

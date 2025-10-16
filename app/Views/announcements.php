@@ -8,17 +8,23 @@
   <?php if (empty($announcements)): ?>
     <div class="alert alert-info">No announcements yet.</div>
   <?php else: ?>
-    <div class="list-group">
+    <div class="row g-3">
       <?php foreach ($announcements as $announcement): ?>
-        <div class="list-group-item list-group-item-action">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1"><?= esc($announcement['title'] ?? 'Untitled') ?></h5>
-            <small class="text-muted">
-              <?php $date = $announcement['created_at'] ?? null; ?>
-              <?= $date ? esc(date('M d, Y g:i A', strtotime((string) $date))) : '—' ?>
-            </small>
+        <div class="col-12">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"><?= esc($announcement['title'] ?? 'Untitled') ?></h5>
+                <small class="text-muted">
+                  <?php $date = $announcement['created_at'] ?? null; ?>
+                  <?= $date ? esc(date('M d, Y g:i A', strtotime((string) $date))) : '—' ?>
+                </small>
+              </div>
+              <p class="mb-0 mt-2">
+                <?= nl2br(esc($announcement['content'] ?? '')) ?>
+              </p>
+            </div>
           </div>
-          <p class="mb-1"><?= nl2br(esc($announcement['content'] ?? '')) ?></p>
         </div>
       <?php endforeach; ?>
     </div>
