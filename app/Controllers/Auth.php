@@ -12,10 +12,11 @@ class Auth extends Controller
     // =========================
     public function register()
     {
-        if ($this->request->getMethod() === 'post') {
-            return $this->store();
+        // If already logged in, redirect to dashboard
+        if (session()->get('isLoggedIn')) {
+            return redirect()->to('/dashboard');
         }
-
+        
         return view('auth/register');
     }
 
@@ -24,43 +25,38 @@ class Auth extends Controller
     // =========================
     public function store()
     {
-        $session      = session();
-        $userModel    = new UserModel();
+        $session = session();
+        $userModel = new UserModel();
 
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => [
-                'label' => 'Full Name',
-                'rules' => 'required|regex_match[/^[A-Za-z ]+$/]',
-                'errors' => [
-                    'required'    => 'Full Name is required.',
-                    'regex_match' => 'Full Name can only contain letters and spaces.'
-                ]
-            ],
-            'email' => 'required|valid_email|is_unique[users.email]', // ✅ changed to users.email
-            'password' => 'required|min_length[8]',
-            'password_confirm' => 'required|matches[password]',
-            'role' => 'required|in_list[admin,teacher,student]'
-        ]);
+        // Validate input
+        $rules = [
+            'name' => 'required|min_length[3]',
+            'email' => 'required|valid_email|is_unique[users.email]',
+            'password' => 'required|min_length[6]',
+            'password_confirm' => 'required|matches[password]'
+        ];
 
-        if (!$validation->withRequest($this->request)->run()) {
-            return view('auth/register', ['validation' => $validation]);
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('validation', $this->validator);
         }
 
-        // Save the selected role directly (for lab testing of multiple roles)
-        $postedRole = (string) $this->request->getPost('role');
-        $allowedRoles = ['admin', 'teacher', 'student'];
-        $roleToSave = in_array($postedRole, $allowedRoles, true) ? $postedRole : 'student';
-
-        $userModel->save([
-            'name'     => $this->request->getPost('name'),
-            'email'    => $this->request->getPost('email'),
+        // Store user with default student role
+        $data = [
+            'name' => $this->request->getPost('name'),
+            'email' => $this->request->getPost('email'),
             'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role'     => $roleToSave,
-        ]);
+            'role' => 'student'  // Default role is set here
+        ];
 
-        $session->setFlashdata('success', 'Registration successful! You can login now.');
-        return redirect()->to('/login');
+        if ($userModel->save($data)) {
+            $session->setFlashdata('success', 'Registration successful. Please login.');
+            return redirect()->to('/login');
+        } else {
+            $session->setFlashdata('error', 'Registration failed. Please try again.');
+            return redirect()->back()->withInput();
+        }
     }
 
     // =========================
@@ -80,63 +76,35 @@ class Auth extends Controller
     // =========================
     public function attemptLogin()
     {
-        $session   = session();
+        $session = session();
         $userModel = new UserModel();
 
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'email' => 'required|valid_email',
-            'password' => 'required'
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return view('auth/login', ['validation' => $validation]);
-        }
-
-        $email    = $this->request->getPost('email');
+        $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
-
-        // Simple login throttling: limit repeated attempts per IP+email
-        $ip = $this->request->getIPAddress();
-        $cache = \Config\Services::cache();
-        $key = 'login_attempts_' . md5($ip . '_' . strtolower((string) $email));
-        $attempts = (int) ($cache->get($key) ?? 0);
-        if ($attempts >= 5) {
-            $session->setFlashdata('error', 'Too many login attempts. Try again in 10 minutes.');
-            return redirect()->back()->withInput();
-        }
 
         $user = $userModel->where('email', $email)->first();
 
         if ($user && password_verify($password, $user['password'])) {
-            // Reset attempts on success
-            $cache->delete($key);
-            // Regenerate session ID to prevent fixation
-            $session->regenerate();
             $session->set([
-                'user_id'    => $user['id'],
-                'name'       => $user['name'],
-                'email'      => $user['email'],
-                'role'       => $user['role'],
-                'isLoggedIn' => true,
+                'user_id' => $user['id'],
+                'email' => $user['email'],
+                'name' => $user['name'],
+                'role' => $user['role'],
+                'isLoggedIn' => true
             ]);
-            $session->setFlashdata('success', 'Welcome back, ' . $user['name'] . '!');
-            // Role-based redirection
-            $role = (string) ($user['role'] ?? 'student');
-            if ($role === 'admin') {
-                return redirect()->to('/admin/dashboard');
+
+            // Redirect based on role
+            switch($user['role']) {
+                case 'admin':
+                    return redirect()->to('admin/dashboard');
+                case 'teacher':
+                    return redirect()->to('teacher/dashboard');
+                default:
+                    return redirect()->to('student/dashboard');
             }
-            if ($role === 'teacher') {
-                return redirect()->to('/teacher/dashboard');
-            }
-            // default to student announcements
-            return redirect()->to('/announcements');
         }
 
-        // Increment attempts on failure (10-minute decay)
-        $cache->save($key, $attempts + 1, 600);
-        $session->setFlashdata('error', 'Invalid email or password!');
-        return redirect()->back()->withInput();
+        return redirect()->back()->with('error', 'Invalid login credentials');
     }
 
     // =========================
@@ -145,41 +113,43 @@ class Auth extends Controller
     public function dashboard()
     {
         $session = session();
-
+        
+        // Check if user is logged in
         if (!$session->get('isLoggedIn')) {
             return redirect()->to('/login');
         }
 
-        $role   = (string) $session->get('role');
-        $userId = (int) $session->get('user_id');
-
-        $db = \Config\Database::connect();
-        $roleData = [];
-
-        if ($role === 'admin') {
-            $roleData = [
-                'totalUsers'       => (int) $db->table('users')->countAllResults(),
-                'totalCourses'     => (int) $db->table('courses')->countAllResults(),
-                'totalEnrollments' => (int) $db->table('enrollments')->countAllResults(),
-            ];
-        } elseif ($role === 'teacher') {//Teacher
-            $roleData = [
-                'myCourses' => (int) $db->table('courses')->where('instructor_id', $userId)->countAllResults(),
-            ];
-        } else { // student
-            $roleData = [
-                // enrollments table uses user_id (not student_id)
-                'myEnrollments' => (int) $db->table('enrollments')->where('user_id', $userId)->countAllResults(),
-            ];
-        }
-
+        $userModel = new UserModel();
         $data = [
-            'name'     => $session->get('name'),
-            'role'     => $role,
-            'roleData' => $roleData,
+            'name' => $session->get('name'),
+            'role' => $session->get('role'),
+            'roleData' => []
         ];
 
-        return view('dashboard', $data);
+        // Load role-specific data
+        switch ($session->get('role')) {
+            case 'admin':
+                $data['roleData'] = [
+                    'totalUsers' => $userModel->countAll(),
+                    'totalCourses' => 10, // Replace with actual course count
+                    'totalEnrollments' => 50 // Replace with actual enrollment count
+                ];
+                break;
+
+            case 'teacher':
+                $data['roleData'] = [
+                    'myCourses' => 5 // Replace with actual teacher's courses count
+                ];
+                break;
+
+            case 'student':
+                $data['roleData'] = [
+                    'myEnrollments' => 3 // Replace with actual student's enrollments count
+                ];
+                break;
+        }
+
+        return view('auth/dashboard', $data);
     }
 
     // =========================
@@ -187,10 +157,19 @@ class Auth extends Controller
     // =========================
     public function logout()
     {
-        // Regenerate before destroying to mitigate fixation
         $session = session();
-        $session->regenerate(true);
+        
+        // Clear all session data
         $session->destroy();
-        return redirect()->to('/login');
+        
+        // Prevent browser back button after logout
+        $response = service('response');
+        $response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->setHeader('Cache-Control', 'post-check=0, pre-check=0');
+        $response->setHeader('Pragma', 'no-cache');
+        
+        return redirect()
+            ->to('/login')
+            ->with('message', 'You have been logged out successfully');
     }
 }

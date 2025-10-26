@@ -1,61 +1,162 @@
 <?php
 
-namespace App\Filters;
+namespace App\Controllers;
 
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Filters\FilterInterface;
+use App\Models\UserModel;
+use CodeIgniter\Controller;
 
-class RoleAuth implements FilterInterface
+class Auth extends Controller
 {
-    public function before(RequestInterface $request, $arguments = null)
+    // =========================
+    // Register Page
+    // =========================
+    public function register()
+    {
+        if (session()->get('isLoggedIn')) {
+            return redirect()->to('/dashboard');
+        }
+
+        return view('auth/register');
+    }
+
+    // =========================
+    // Handle Registration
+    // =========================
+    public function store()
+    {
+        $session = session();
+        $userModel = new UserModel();
+
+        // Validate input
+        $rules = [
+            'name' => 'required|min_length[3]',
+            'email' => 'required|valid_email|is_unique[users.email]',
+            'password' => 'required|min_length[6]',
+            'password_confirm' => 'required|matches[password]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('validation', $this->validator);
+        }
+
+        // Hash password before saving
+        $passwordHash = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
+
+        $data = [
+            'name'     => $this->request->getPost('name'),
+            'email'    => $this->request->getPost('email'),
+            'password' => $passwordHash,
+            'role'     => 'student' // default role
+        ];
+
+        if ($userModel->insert($data)) {
+            $session->setFlashdata('success', 'Registration successful. Please log in.');
+            return redirect()->to('/login');
+        } else {
+            $session->setFlashdata('error', 'Registration failed. Try again.');
+            return redirect()->back()->withInput();
+        }
+    }
+
+    // =========================
+    // Login Page
+    // =========================
+    public function login()
+    {
+        if ($this->request->getMethod() === 'post') {
+            return $this->attemptLogin();
+        }
+
+        return view('auth/login');
+    }
+
+    // =========================
+    // Handle Login
+    // =========================
+    private function attemptLogin()
+    {
+        $session = session();
+        $userModel = new UserModel();
+
+        $email    = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+
+        $user = $userModel->where('email', $email)->first();
+
+        if ($user && password_verify($password, $user['password'])) {
+            $session->set([
+                'user_id'   => $user['id'],
+                'email'     => $user['email'],
+                'name'      => $user['name'],
+                'role'      => $user['role'],
+                'isLoggedIn'=> true
+            ]);
+
+            // Redirect based on role
+            if ($user['role'] === 'admin') {
+                return redirect()->to('admin/dashboard');
+            } elseif ($user['role'] === 'teacher') {
+                return redirect()->to('teacher/dashboard');
+            } else {
+                return redirect()->to('student/dashboard');
+            }
+        }
+
+        return redirect()->back()->with('error', 'Invalid login credentials.');
+    }
+
+    // =========================
+    // Dashboard
+    // =========================
+    public function dashboard()
     {
         $session = session();
 
-        // Not logged in → redirect to login
         if (!$session->get('isLoggedIn')) {
             return redirect()->to('/login');
         }
 
-        $role = (string) ($session->get('role') ?? '');
-        $path = ltrim((string) $request->getUri()->getPath(), '/');
+        $userModel = new UserModel();
+        $data = [
+            'name' => $session->get('name'),
+            'role' => $session->get('role'),
+            'roleData' => []
+        ];
 
-        // Allow students: /student/* and /announcements
-        if ($role === 'student') {
-            if (str_starts_with($path, 'student') || $path === 'announcements') {
-                return null;
-            }
-            $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-            return redirect()->to('/announcements');
+        switch ($session->get('role')) {
+            case 'admin':
+                $data['roleData'] = [
+                    'totalUsers' => $userModel->countAll(),
+                    'totalCourses' => 10,
+                    'totalEnrollments' => 50
+                ];
+                break;
+            case 'teacher':
+                $data['roleData'] = ['myCourses' => 5];
+                break;
+            case 'student':
+                $data['roleData'] = ['myEnrollments' => 3];
+                break;
         }
 
-        // Allow teachers: /teacher/*
-        if ($role === 'teacher') {
-            if (str_starts_with($path, 'teacher')) {
-                return null;
-            }
-            $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-            return redirect()->to('/announcements');
-        }
-
-        // Allow admins: /admin/*
-        if ($role === 'admin') {
-            if (str_starts_with($path, 'admin')) {
-                return null;
-            }
-            $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-            return redirect()->to('/announcements');
-        }
-
-        // Unknown role → deny
-        $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-        return redirect()->to('/announcements');
+        return view('auth/dashboard', $data);
     }
 
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    // =========================
+    // Logout
+    // =========================
+    public function logout()
     {
-        // no-op
+        $session = session();
+        $session->destroy();
+
+        $response = service('response');
+        $response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->setHeader('Cache-Control', 'post-check=0, pre-check=0');
+        $response->setHeader('Pragma', 'no-cache');
+
+        return redirect()->to('/login')->with('message', 'You have been logged out successfully.');
     }
 }
-
-

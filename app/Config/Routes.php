@@ -2,34 +2,21 @@
 
 use CodeIgniter\Router\RouteCollection;
 
-/**
- * @var RouteCollection $routes
- */
-
-// Lab 3
+// Public routes
 $routes->get('/', 'Home::index');
-$routes->get('/about', 'Home::about');
-$routes->get('/contact', 'Home::contact');  
-// Lab 4
-// Authentication Routes
-$routes->get('/login', 'Auth::login');            
-$routes->post('/login', 'Auth::attemptLogin');  
-// Registration Routes
-$routes->get('/register', 'Auth::register');     
-$routes->post('/register', 'Auth::store');          
-// Protected Routes
-$routes->get('/dashboard', 'Auth::dashboard');       
-$routes->get('/logout', 'Auth::logout');                        
-// Exam Tasks - Announcements
-$routes->get('/announcements', 'Announcement::index');
-// Exam Tasks - Role Dashboards (protected by RoleAuth)
-$routes->group('teacher', ['filter' => 'roleauth'], static function ($routes) {
-    $routes->get('dashboard', 'Teacher::dashboard');
-});
-$routes->group('admin', ['filter' => 'roleauth'], static function ($routes) {
-    $routes->get('dashboard', 'Admin::dashboard');
-});
-// Optional: protect student dashboard with same filter
-$routes->group('student', ['filter' => 'roleauth'], static function ($routes) {
-    $routes->get('dashboard', 'Student::dashboard');
+$routes->get('/login', 'Auth::login');
+$routes->post('/login', 'Auth::attemptLogin');
+$routes->get('/register', 'Auth::register');
+$routes->post('/register', 'Auth::store');
+$routes->get('/logout', 'Auth::logout');
+
+// Admin routes protected by the 'role' filter:
+$routes->group('admin', ['filter' => 'role'], function($routes) {
+    $routes->get('dashboard',   'Admin::dashboard');
+    $routes->get('users',       'Admin::users'); 
+    $routes->get('create',      'Admin::create');
+    $routes->post('store',      'Admin::store');
+    $routes->get('edit/(:num)', 'Admin::edit/$1');
+    $routes->post('update/(:num)','Admin::update/$1');
+    $routes->get('delete/(:num)','Admin::delete/$1');
 });
