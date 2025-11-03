@@ -4,7 +4,6 @@ use Config\Paths;
 
 /*
  *---------------------------------------------------------------
-<<<<<<< HEAD
  * SECURITY: BLOCK XAMPP DASHBOARD ACCESS
  *---------------------------------------------------------------
  */
@@ -28,17 +27,11 @@ foreach ($xamppPaths as $xamppPath) {
 
 /*
  *---------------------------------------------------------------
-=======
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
  * SECURITY: BLOCK DIRECTORY TRAVERSAL ATTEMPTS
  *---------------------------------------------------------------
  */
 
 // Check for directory traversal attempts in the request URI
-<<<<<<< HEAD
-=======
-$requestUri = $_SERVER['REQUEST_URI'] ?? '';
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 $queryString = $_SERVER['QUERY_STRING'] ?? '';
 
 // Patterns to detect directory traversal attempts

@@ -28,7 +28,6 @@
 
         <div class="mb-3">
             <label class="form-label">Role</label>
-<<<<<<< HEAD
             <?php 
             $sel = old('role', $user['role'] ?? ''); 
             $isAdmin = isset($user['role']) && $user['role'] === 'admin';
@@ -45,14 +44,6 @@
                 <input type="hidden" name="role" value="admin">
                 <small class="text-muted">Admin role cannot be changed</small>
             <?php endif; ?>
-=======
-            <?php $sel = old('role', $user['role'] ?? ''); ?>
-            <select name="role" class="form-select">
-                <option value="admin" <?= $sel === 'admin' ? 'selected' : '' ?>>admin</option>
-                <option value="teacher" <?= $sel === 'teacher' ? 'selected' : '' ?>>teacher</option>
-                <option value="student" <?= $sel === 'student' ? 'selected' : '' ?>>student</option>
-            </select>
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
             <?php if ($validation->getError('role')): ?><div class="text-danger"><?= $validation->getError('role') ?></div><?php endif; ?>
         </div>
 

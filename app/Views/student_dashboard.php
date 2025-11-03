@@ -4,7 +4,6 @@
   <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
       <h1 class="h3 mb-0">Student Dashboard</h1>
-      <small class="text-muted">Minimal and focused</small>
     </div>
   </div>
 
@@ -13,29 +12,32 @@
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <div class="text-muted">Latest Announcements</div>
-<<<<<<< HEAD
           <?php if (!empty($latestAnnouncements)): ?>
             <ul class="mt-2 mb-0">
               <?php foreach ($latestAnnouncements as $a): ?>
-                <li class="small"><strong><?= esc($a['title']) ?></strong> <span class="text-muted">(<?= date('M d', strtotime($a['created_at'])) ?>)</span></li>
+                <li class="small">
+                  <strong><?= esc($a['title']) ?></strong>
+                  <span class="text-muted">(<?= date('M d', strtotime($a['created_at'])) ?>)</span>
+                </li>
               <?php endforeach; ?>
             </ul>
           <?php else: ?>
             <div class="fw-semibold mt-1">No announcements yet.</div>
           <?php endif; ?>
-=======
-          <div class="fw-semibold mt-1">Visit the Announcements page to view updates.</div>
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
-          <a href="<?= base_url('announcements') ?>" class="btn btn-sm btn-primary mt-3">Go to Announcements</a>
+          <a href="<?= base_url('student/announcements') ?>" class="btn btn-sm btn-primary mt-3">
+            Go to Announcements
+          </a>
         </div>
       </div>
     </div>
+
     <div class="col-12 col-md-6">
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <div class="text-muted">My Enrollments</div>
-<<<<<<< HEAD
-          <div class="fw-semibold mt-1">You are enrolled in <?= (int)($enrollmentCount ?? 0) ?> course(s).</div>
+          <div class="fw-semibold mt-1">
+            You are enrolled in <?= (int)($enrollmentCount ?? 0) ?> course(s).
+          </div>
           <?php if (!empty($myCourses)): ?>
             <ul class="mt-2 mb-0">
               <?php foreach ($myCourses as $c): ?>
@@ -43,14 +45,11 @@
               <?php endforeach; ?>
             </ul>
           <?php endif; ?>
-          <div class="text-muted mt-3">Available quizzes across your courses: <strong><?= (int)($myQuizzesCount ?? 0) ?></strong></div>
-=======
-          <div class="fw-semibold mt-1">—</div>
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
+          <div class="text-muted mt-3">
+            Available quizzes across your courses: <strong><?= (int)($myQuizzesCount ?? 0) ?></strong>
+          </div>
         </div>
       </div>
     </div>
   </div>
 <?= $this->endSection() ?>
-
-

@@ -2,7 +2,6 @@
 Options -Indexes
 
 # ----------------------------------------------------------------------
-<<<<<<< HEAD
 # Security Rules - Block XAMPP Dashboard Access
 # ----------------------------------------------------------------------
 
@@ -15,21 +14,6 @@ RewriteCond %{REQUEST_URI} ^/(xampp|dashboard|webalizer|security|licenses|applic
 RewriteCond %{REQUEST_URI} !^/ITE311-SIGNAR/(admin|student|teacher)/dashboard [NC]
 RewriteCond %{REQUEST_URI} !^/ITE311-SIGNAR/ [NC]
 RewriteRule ^.*$ /ITE311-SIGNAR/login [R=301,L]
-=======
-# Security Rules - Block Directory Traversal Attacks
-# ----------------------------------------------------------------------
-
-# Block access to any path containing .. (directory traversal)
-RewriteEngine On
-
-# Block directory traversal attempts - Multiple patterns
-RewriteCond %{REQUEST_URI} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e%5c|\.\.%2f|\.\.%5c) [NC]
-RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
-
-# Block access to parent directories
-RewriteCond %{REQUEST_URI} ^/\.\./ [NC]
-RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 
 # Block access to sensitive files and directories
 <FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak|sql|conf)$">
@@ -61,26 +45,12 @@ RedirectMatch 403 ^/(app|system|vendor|writable|tests)/.*
 	# http://httpd.apache.org/docs/current/mod/mod_rewrite.html#rewritebase
 	RewriteBase /ITE311-SIGNAR/
 
-<<<<<<< HEAD
 	# Security: Block XAMPP Dashboard Access
 	# Block /dashboard, /dashboard/, /dashboard/index.php, etc. at root level
 	# But allow /ITE311-SIGNAR/admin/dashboard, /ITE311-SIGNAR/student/dashboard, /ITE311-SIGNAR/teacher/dashboard
 	RewriteCond %{REQUEST_URI} ^/(xampp|dashboard|webalizer|security|licenses|application)(/.*)?$ [NC]
 	RewriteCond %{REQUEST_URI} !^/ITE311-SIGNAR/(admin|student|teacher)/dashboard [NC]
 	RewriteRule ^.*$ /ITE311-SIGNAR/login [R=301,L]
-=======
-	# Security: Block directory traversal attempts - Multiple patterns
-	RewriteCond %{REQUEST_URI} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e%5c|\.\.%2f|\.\.%5c) [NC]
-	RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
-
-	# Security: Block access to sensitive paths
-	RewriteCond %{REQUEST_URI} ^/(app|system|vendor|writable|tests|\.git)/ [NC]
-	RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
-
-	# Security: Block access to parent directories
-	RewriteCond %{REQUEST_URI} ^/\.\./ [NC]
-	RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 
 	# Redirect Trailing Slashes...
 	RewriteCond %{REQUEST_FILENAME} !-d
@@ -90,11 +60,7 @@ RedirectMatch 403 ^/(app|system|vendor|writable|tests)/.*
 	# Rewrite "www.example.com -> example.com"
 	RewriteCond %{HTTPS} !=on
 	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-<<<<<<< HEAD
 	RewriteRule ^ https://localhost/ITE311-SIGNAR/{REQUEST_URI} [R=301,L]
-=======
-	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 
 	# Checks to see if the user is attempting to access a valid file,
 	# such as an image or css document, if this isn't true it sends the
