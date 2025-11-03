@@ -1,0 +1,22 @@
+# Security: Block directory traversal attempts
+RewriteEngine On
+
+# Block any directory traversal attempts
+RewriteCond %{REQUEST_URI} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e%5c|\.\.%2f|\.\.%5c) [NC]
+RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
+
+# Block access to sensitive directories
+RewriteCond %{REQUEST_URI} ^/(app|system|vendor|writable|tests|\.git)/ [NC]
+RewriteRule ^.*$ /ITE311-SIGNAR/ [R=301,L]
+
+# Block access to sensitive files
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak|sql|conf)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block access to hidden files
+<FilesMatch "^\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
