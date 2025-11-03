@@ -27,6 +27,7 @@ class SecurityFilter implements FilterInterface
     {
         $uri = $request->getUri();
         $path = $uri->getPath();
+<<<<<<< HEAD
         
         // Get the raw request URI for better detection
         $rawUri = $_SERVER['REQUEST_URI'] ?? $path;
@@ -51,6 +52,37 @@ class SecurityFilter implements FilterInterface
             }
         }
         
+=======
+        $query = $uri->getQuery();
+        
+        // Block directory traversal attempts - Check both path and query
+        $traversalPatterns = ['..', '%2e%2e', '%2E%2E', '%252e%252e', '%252E%252E'];
+        foreach ($traversalPatterns as $pattern) {
+            if (strpos($path, $pattern) !== false || strpos($query, $pattern) !== false) {
+                // Log the attempt
+                log_message('warning', 'Directory traversal attempt blocked: ' . $path . ' Query: ' . $query . ' from IP: ' . $request->getIPAddress());
+                
+                // Redirect to home page
+                return redirect()->to('/ITE311-SIGNAR/');
+            }
+        }
+        
+        // Block access to sensitive directories
+        $sensitivePaths = ['/app/', '/system/', '/vendor/', '/writable/', '/tests/', '/.git/'];
+        foreach ($sensitivePaths as $sensitivePath) {
+            if (strpos($path, $sensitivePath) !== false) {
+                log_message('warning', 'Sensitive directory access attempt blocked: ' . $path . ' from IP: ' . $request->getIPAddress());
+                return redirect()->to('/ITE311-SIGNAR/');
+            }
+        }
+        
+        // Block access to parent directories
+        if (strpos($path, '/../') !== false || strpos($path, '\\..\\') !== false) {
+            log_message('warning', 'Parent directory access attempt blocked: ' . $path . ' from IP: ' . $request->getIPAddress());
+            return redirect()->to('/ITE311-SIGNAR/');
+        }
+        
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         return $request;
     }
 

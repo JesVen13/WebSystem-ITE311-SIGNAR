@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Admin Dashboard</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<<<<<<< HEAD
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="p-4">
@@ -12,12 +13,22 @@
         <h1>Admin Dashboard</h1>
         <div>
             <span class="me-3">Logged in as <strong><?= esc($name) ?></strong> (Admin)</span>
+=======
+</head>
+<body class="p-4">
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Admin Dashboard</h1>
+        <div>
+            <span class="me-3">Logged in as <?= esc($name) ?> (<?= esc($role) ?>)</span>
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
             <a href="<?= base_url('/admin/create') ?>" class="btn btn-primary">Create User</a>
             <a href="<?= base_url('/logout') ?>" class="btn btn-secondary">Logout</a>
         </div>
     </div>
 
     <?php if (session()->getFlashdata('success')): ?>
+<<<<<<< HEAD
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?= session()->getFlashdata('success') ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -67,10 +78,16 @@
         </div>
     </div>
 
+=======
+        <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
+    <?php endif; ?>
+
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Users</h5>
             <div class="table-responsive">
+<<<<<<< HEAD
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
@@ -120,6 +137,26 @@
                         </tr>
                     <?php endforeach; else: ?>
                         <tr><td colspan="6" class="text-center">No registered users found.</td></tr>
+=======
+                <table class="table table-striped">
+                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    <?php if (! empty($users)): foreach ($users as $u): ?>
+                        <tr>
+                            <td><?= esc($u['id']) ?></td>
+                            <td><?= esc($u['name']) ?></td>
+                            <td><?= esc($u['email']) ?></td>
+                            <td><?= esc($u['role']) ?></td>
+                            <td>
+                                <a href="<?= base_url("/admin/edit/{$u['id']}") ?>" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="<?= base_url("/admin/delete/{$u['id']}") ?>"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Delete user #<?= esc($u['id']) ?>?');">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; else: ?>
+                        <tr><td colspan="5" class="text-center">No users found.</td></tr>
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
                     <?php endif; ?>
                     </tbody>
                 </table>

@@ -13,7 +13,11 @@
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <div class="text-muted">My Courses</div>
+<<<<<<< HEAD
           <div class="display-6 fw-semibold"><?= (int)($courseCount ?? 0) ?></div>
+=======
+          <div class="display-6 fw-semibold">—</div>
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         </div>
       </div>
     </div>
@@ -21,7 +25,11 @@
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <div class="text-muted">Upcoming Lessons</div>
+<<<<<<< HEAD
           <div class="display-6 fw-semibold"><?= (int)($lessonsCount ?? 0) ?></div>
+=======
+          <div class="display-6 fw-semibold">—</div>
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         </div>
       </div>
     </div>
@@ -29,12 +37,17 @@
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <div class="text-muted">Pending Submissions</div>
+<<<<<<< HEAD
           <div class="display-6 fw-semibold"><?= (int)($pendingSubmissions ?? 0) ?></div>
+=======
+          <div class="display-6 fw-semibold">—</div>
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         </div>
       </div>
     </div>
   </div>
 
+<<<<<<< HEAD
   <?php if (!empty($myCourses)): ?>
   <div class="card mt-3 shadow-sm border-0">
     <div class="card-body">
@@ -48,6 +61,8 @@
   </div>
   <?php endif; ?>
 
+=======
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 <?= $this->endSection() ?>
 
 

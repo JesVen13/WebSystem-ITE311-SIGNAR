@@ -33,8 +33,12 @@ class Auth extends Controller
             'name' => 'required|min_length[3]',
             'email' => 'required|valid_email|is_unique[users.email]',
             'password' => 'required|min_length[6]',
+<<<<<<< HEAD
             'password_confirm' => 'required|matches[password]',
             'role' => 'required|in_list[student,teacher]',
+=======
+            'password_confirm' => 'required|matches[password]'
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         ];
 
         if (!$this->validate($rules)) {
@@ -43,17 +47,25 @@ class Auth extends Controller
                 ->with('validation', $this->validator);
         }
 
+<<<<<<< HEAD
         // Store user with chosen role (student/teacher only)
         $chosenRole = $this->request->getPost('role');
         if (! in_array($chosenRole, ['student', 'teacher'], true)) {
             $chosenRole = 'student';
         }
 
+=======
+        // Store user with default student role
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         $data = [
             'name' => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
             'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+<<<<<<< HEAD
             'role' => $chosenRole
+=======
+            'role' => 'student'  // Default role is set here
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         ];
 
         if ($userModel->save($data)) {

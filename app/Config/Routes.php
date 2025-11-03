@@ -20,6 +20,7 @@ $routes->group('admin', ['filter' => 'role'], function($routes) {
     $routes->post('update/(:num)','Admin::update/$1');
     $routes->get('delete/(:num)','Admin::delete/$1');
 });
+<<<<<<< HEAD
 
 // Teacher routes protected by role:teacher
 $routes->group('teacher', ['filter' => 'role:teacher'], function($routes) {
@@ -30,3 +31,5 @@ $routes->group('teacher', ['filter' => 'role:teacher'], function($routes) {
 $routes->group('student', ['filter' => 'role:student'], function($routes) {
     $routes->get('dashboard', 'Student::dashboard');
 });
+=======
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7

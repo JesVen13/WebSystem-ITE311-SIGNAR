@@ -2,15 +2,19 @@
 
 namespace App\Controllers;
 
+<<<<<<< HEAD
 use App\Models\EnrollmentModel;
 use App\Models\CourseModel;
 use App\Models\AnnouncementModel;
 use App\Models\QuizModel;
 
+=======
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 class Student extends BaseController
 {
     public function dashboard()
     {
+<<<<<<< HEAD
         $userId = session()->get('user_id');
 
         $enrollments = new EnrollmentModel();
@@ -49,6 +53,9 @@ class Student extends BaseController
             'myQuizzesCount' => $myQuizzesCount,
             'enrollmentCount' => count($courseIds),
         ]);
+=======
+        return view('student_dashboard');
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
     }
 }
 

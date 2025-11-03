@@ -13,6 +13,7 @@
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <div class="text-muted">Latest Announcements</div>
+<<<<<<< HEAD
           <?php if (!empty($latestAnnouncements)): ?>
             <ul class="mt-2 mb-0">
               <?php foreach ($latestAnnouncements as $a): ?>
@@ -22,6 +23,9 @@
           <?php else: ?>
             <div class="fw-semibold mt-1">No announcements yet.</div>
           <?php endif; ?>
+=======
+          <div class="fw-semibold mt-1">Visit the Announcements page to view updates.</div>
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
           <a href="<?= base_url('announcements') ?>" class="btn btn-sm btn-primary mt-3">Go to Announcements</a>
         </div>
       </div>
@@ -30,6 +34,7 @@
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <div class="text-muted">My Enrollments</div>
+<<<<<<< HEAD
           <div class="fw-semibold mt-1">You are enrolled in <?= (int)($enrollmentCount ?? 0) ?> course(s).</div>
           <?php if (!empty($myCourses)): ?>
             <ul class="mt-2 mb-0">
@@ -39,6 +44,9 @@
             </ul>
           <?php endif; ?>
           <div class="text-muted mt-3">Available quizzes across your courses: <strong><?= (int)($myQuizzesCount ?? 0) ?></strong></div>
+=======
+          <div class="fw-semibold mt-1">—</div>
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         </div>
       </div>
     </div>

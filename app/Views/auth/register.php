@@ -47,6 +47,7 @@
                                 <input type="password" class="form-control" id="password_confirm" name="password_confirm">
                             </div>
 
+<<<<<<< HEAD
                             <div class="mb-3">
                                 <label for="role" class="form-label">Role</label>
                                 <?php $selRole = old('role', 'student'); ?>
@@ -56,6 +57,8 @@
                                 </select>
                             </div>
 
+=======
+>>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Register</button>
                             </div>
