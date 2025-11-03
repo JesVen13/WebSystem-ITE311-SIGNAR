@@ -24,11 +24,7 @@ class Security extends BaseConfig
      *
      * Randomize the CSRF Token for added security.
      */
-<<<<<<< HEAD
     public bool $tokenRandomize = true;
-=======
-    public bool $tokenRandomize = false;
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 
     /**
      * --------------------------------------------------------------------------

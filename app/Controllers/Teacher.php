@@ -2,18 +2,14 @@
 
 namespace App\Controllers;
 
-<<<<<<< HEAD
 use App\Models\CourseModel;
 use App\Models\LessonModel;
 use App\Models\SubmissionModel;
 
-=======
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
 class Teacher extends BaseController
 {
     public function dashboard()
     {
-<<<<<<< HEAD
         $userId = session()->get('user_id');
 
         $courses = new CourseModel();
@@ -48,9 +44,6 @@ class Teacher extends BaseController
             'lessonsCount' => $lessonsCount,
             'pendingSubmissions' => $pendingSubmissions,
         ]);
-=======
-        return view('teacher_dashboard');
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
     }
 }
 

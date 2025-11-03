@@ -17,7 +17,6 @@ class Admin extends BaseController
     // show dashboard and users list
     public function dashboard()
     {
-<<<<<<< HEAD
         // Get all registered users (excluding the current admin for safety)
         $allUsers = $this->userModel->orderBy('created_at', 'DESC')->findAll();
         
@@ -35,12 +34,6 @@ class Admin extends BaseController
             'totalTeachers' => $totalTeachers,
             'totalStudents' => $totalStudents,
             'totalAdmins' => $totalAdmins,
-=======
-        $data = [
-            'name'  => session()->get('name'),
-            'role'  => session()->get('role'),
-            'users' => $this->userModel->orderBy('id', 'DESC')->findAll(),
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
             'validation' => \Config\Services::validation(),
         ];
 
@@ -65,18 +58,13 @@ class Admin extends BaseController
             'name' => 'required|min_length[3]',
             'email' => 'required|valid_email|is_unique[users.email]',
             'password' => 'required|min_length[6]',
-<<<<<<< HEAD
             'role' => 'required|in_list[teacher,student]', // Only allow teacher and student
-=======
-            'role' => 'required|in_list[admin,teacher,student]',
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         ];
 
         if (! $this->validate($rules)) {
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
-<<<<<<< HEAD
         // Ensure only one admin exists - prevent creating admin accounts
         $role = $this->request->getPost('role');
         if ($role === 'admin') {
@@ -92,16 +80,6 @@ class Admin extends BaseController
         ]);
 
         session()->setFlashdata('success', 'User created successfully.');
-=======
-        $this->userModel->insert([
-            'name' => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email'),
-            'password_hash' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role' => $this->request->getPost('role'),
-        ]);
-
-        session()->setFlashdata('success', 'User created.');
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         return redirect()->to(base_url('/admin/dashboard'));
     }
 
@@ -129,7 +107,6 @@ class Admin extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException("User not found: {$id}");
         }
 
-<<<<<<< HEAD
         // Prevent modifying the current admin account's role
         $currentAdminId = session()->get('user_id');
         if ($user['id'] == $currentAdminId && $user['role'] === 'admin') {
@@ -137,8 +114,6 @@ class Admin extends BaseController
             return redirect()->to(base_url('/admin/dashboard'));
         }
 
-=======
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         $emailRule = 'required|valid_email';
         if ($this->request->getPost('email') !== $user['email']) {
             $emailRule .= '|is_unique[users.email]';
@@ -147,11 +122,7 @@ class Admin extends BaseController
         $rules = [
             'name' => 'required|min_length[3]',
             'email' => $emailRule,
-<<<<<<< HEAD
             'role' => 'required|in_list[teacher,student]', // Only allow teacher and student
-=======
-            'role' => 'required|in_list[admin,teacher,student]',
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         ];
 
         $password = $this->request->getPost('password');
@@ -163,7 +134,6 @@ class Admin extends BaseController
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
-<<<<<<< HEAD
         // Prevent changing role to admin
         $newRole = $this->request->getPost('role');
         if ($newRole === 'admin') {
@@ -185,32 +155,17 @@ class Admin extends BaseController
 
         if ($password) {
             $updateData['password'] = password_hash($password, PASSWORD_DEFAULT);
-=======
-        $updateData = [
-            'name' => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email'),
-            'role' => $this->request->getPost('role'),
-        ];
-
-        if ($password) {
-            $updateData['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         }
 
         $this->userModel->update($id, $updateData);
 
-<<<<<<< HEAD
         session()->setFlashdata('success', 'User updated successfully.');
-=======
-        session()->setFlashdata('success', 'User updated.');
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         return redirect()->to(base_url('/admin/dashboard'));
     }
 
     // delete user
     public function delete($id = null)
     {
-<<<<<<< HEAD
         $user = $this->userModel->find($id);
         if (! $user) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException("User not found: {$id}");
@@ -231,14 +186,6 @@ class Admin extends BaseController
 
         $this->userModel->delete($id);
         session()->setFlashdata('success', 'User deleted successfully.');
-=======
-        if (! $this->userModel->find($id)) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("User not found: {$id}");
-        }
-
-        $this->userModel->delete($id);
-        session()->setFlashdata('success', 'User deleted.');
->>>>>>> c3cd521911bcd31f5d0997904ea5026bc1bd85f7
         return redirect()->to(base_url('/admin/dashboard'));
     }
 }
