@@ -30,8 +30,16 @@ class CreateUsersTable extends Migration
             ],
             'role' => [
                 'type'       => 'ENUM',
-                'constraint' => ['admin', 'user'],
-                'default'    => 'user',
+                'constraint' => ['admin', 'teacher', 'student'],
+                'default'    => 'student',
+            ],
+            'is_restricted' => [
+                'type'       => 'BOOLEAN',
+                'default'    => false,
+            ],
+            'is_deleted' => [
+                'type'       => 'BOOLEAN',
+                'default'    => false,
             ],
             'created_at' => [
                 'type' => 'DATETIME',

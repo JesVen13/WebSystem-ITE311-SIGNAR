@@ -1,13 +1,6 @@
 <?php
 use CodeIgniter\Boot;
 use Config\Paths;
-
-/*
- *---------------------------------------------------------------
- * SECURITY: BLOCK XAMPP DASHBOARD ACCESS
- *---------------------------------------------------------------
- */
-
 // Block XAMPP Dashboard Access - Must be FIRST before any other processing
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
 
@@ -24,13 +17,6 @@ foreach ($xamppPaths as $xamppPath) {
         }
     }
 }
-
-/*
- *---------------------------------------------------------------
- * SECURITY: BLOCK DIRECTORY TRAVERSAL ATTEMPTS
- *---------------------------------------------------------------
- */
-
 // Check for directory traversal attempts in the request URI
 $queryString = $_SERVER['QUERY_STRING'] ?? '';
 
@@ -89,12 +75,6 @@ if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
     exit(1);
 }
 
-/*
- *---------------------------------------------------------------
- * SET THE CURRENT DIRECTORY
- *---------------------------------------------------------------
- */
-
 // Path to the front controller (this file)
 define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);
 
@@ -103,21 +83,9 @@ if (getcwd() . DIRECTORY_SEPARATOR !== FCPATH) {
     chdir(FCPATH);
 }
 
-/*
- *---------------------------------------------------------------
- * BOOTSTRAP THE APPLICATION
- *---------------------------------------------------------------
- * This process sets up the path constants, loads and registers
- * our autoloader, along with Composer's, loads our constants
- * and fires up an environment-specific bootstrapping.
- */
-
 // LOAD OUR PATHS CONFIG FILE
-// This is the line that might need to be changed, depending on your folder structure.
 require __DIR__ . '/app/Config/Paths.php';
 require __DIR__ . '/vendor/autoload.php';
-// ^^^ Change this line if you move your application folder
-
 $paths = new Paths();
 
 // LOAD THE FRAMEWORK BOOTSTRAP FILE

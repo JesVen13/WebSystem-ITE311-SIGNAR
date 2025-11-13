@@ -8,6 +8,7 @@
 </head>
 <body class="p-4">
 <div class="container">
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Admin Dashboard</h1>
         <div>
@@ -17,6 +18,7 @@
         </div>
     </div>
 
+    <!-- Flash Messages -->
     <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?= session()->getFlashdata('success') ?>
@@ -67,9 +69,10 @@
         </div>
     </div>
 
-    <div class="card">
+    <!-- Active Users -->
+    <div class="card mb-5">
         <div class="card-body">
-            <h5 class="card-title">Users</h5>
+            <h5 class="card-title">Active Users</h5>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
@@ -98,23 +101,19 @@
                             </td>
                             <td><?= esc($u['email']) ?></td>
                             <td><span class="<?= $roleBadgeClass ?>"><?= esc(ucfirst($u['role'])) ?></span></td>
+                            <td><?= isset($u['created_at']) ? date('M d, Y', strtotime($u['created_at'])) : 'N/A' ?></td>
                             <td>
-                                <?php if (isset($u['created_at'])): ?>
-                                    <?= date('M d, Y', strtotime($u['created_at'])) ?>
-                                <?php else: ?>
-                                    N/A
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <?php if ($isAdminUser && !$isCurrentUser): ?>
-                                    <span class="text-muted">Admin (Protected)</span>
-                                <?php else: ?>
+                                <?php if (!$isAdminUser && !$isCurrentUser): ?>
                                     <a href="<?= base_url("/admin/edit/{$u['id']}") ?>" class="btn btn-sm btn-warning">Edit</a>
-                                    <?php if (!$isAdminUser && !$isCurrentUser): ?>
-                                        <a href="<?= base_url("/admin/delete/{$u['id']}") ?>"
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Are you sure you want to delete user <?= esc($u['name']) ?>?');">Delete</a>
-                                    <?php endif; ?>
+                                    <a href="<?= base_url("/admin/restrict/{$u['id']}") ?>" 
+                                       class="btn btn-sm <?= $u['is_restricted'] ? 'btn-success' : 'btn-secondary' ?>">
+                                       <?= $u['is_restricted'] ? 'Unrestrict' : 'Restrict' ?>
+                                    </a>
+                                    <a href="<?= base_url("/admin/delete/{$u['id']}") ?>" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Remove <?= esc($u['name']) ?> from dashboard view?');">Delete</a>
+                                <?php elseif ($isAdminUser && !$isCurrentUser): ?>
+                                    <span class="text-muted">Admin (Protected)</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -124,6 +123,47 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <!-- Restricted Users Section -->
+    <div class="card border-danger mb-5">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Restricted Users</h5>
+        </div>
+        <div class="card-body">
+            <?php if (!empty($restrictedUsers)): ?>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-danger">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Restricted Since</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($restrictedUsers as $r): ?>
+                                <tr>
+                                    <td><?= esc($r['id']) ?></td>
+                                    <td><?= esc($r['name']) ?></td>
+                                    <td><?= esc($r['email']) ?></td>
+                                    <td><span class="badge bg-secondary"><?= esc(ucfirst($r['role'])) ?></span></td>
+                                    <td><?= isset($r['updated_at']) ? date('M d, Y', strtotime($r['updated_at'])) : 'N/A' ?></td>
+                                    <td>
+                                        <a href="<?= base_url("/admin/restrict/{$r['id']}") ?>" class="btn btn-sm btn-success">Unrestrict</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <p class="text-muted text-center">No restricted users at the moment.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>

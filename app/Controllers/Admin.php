@@ -14,33 +14,49 @@ class Admin extends BaseController
         $this->userModel = new UserModel();
     }
 
-    // show dashboard and users list
+    // ======================
+    // Admin Dashboard
+    // ======================
     public function dashboard()
     {
-        // Get all registered users (excluding the current admin for safety)
-        $allUsers = $this->userModel->orderBy('created_at', 'DESC')->findAll();
-        
+        // Active (non-deleted, unrestricted) users
+        $activeUsers = $this->userModel
+            ->where('is_deleted', 0)
+            ->where('is_restricted', 0)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
+        // Restricted users
+        $restrictedUsers = $this->userModel
+            ->where('is_deleted', 0)
+            ->where('is_restricted', 1)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
         // Count users by role
-        $totalUsers = $this->userModel->countAll();
-        $totalTeachers = $this->userModel->where('role', 'teacher')->countAllResults();
-        $totalStudents = $this->userModel->where('role', 'student')->countAllResults();
-        $totalAdmins = $this->userModel->where('role', 'admin')->countAllResults();
-        
+        $totalUsers     = $this->userModel->where('is_deleted', 0)->countAllResults(false);
+        $totalTeachers  = $this->userModel->where('role', 'teacher')->where('is_deleted', 0)->countAllResults(false);
+        $totalStudents  = $this->userModel->where('role', 'student')->where('is_deleted', 0)->countAllResults(false);
+        $totalAdmins    = $this->userModel->where('role', 'admin')->where('is_deleted', 0)->countAllResults(false);
+
         $data = [
-            'name'  => session()->get('name'),
-            'role'  => session()->get('role'),
-            'users' => $allUsers,
-            'totalUsers' => $totalUsers,
-            'totalTeachers' => $totalTeachers,
-            'totalStudents' => $totalStudents,
-            'totalAdmins' => $totalAdmins,
-            'validation' => \Config\Services::validation(),
+            'name'            => session()->get('name'),
+            'role'            => session()->get('role'),
+            'users'           => $activeUsers,
+            'restrictedUsers' => $restrictedUsers,
+            'totalUsers'      => $totalUsers,
+            'totalTeachers'   => $totalTeachers,
+            'totalStudents'   => $totalStudents,
+            'totalAdmins'     => $totalAdmins,
+            'validation'      => \Config\Services::validation(),
         ];
 
         return view('admin/dashboard', $data);
     }
 
-    // create form
+    // ======================
+    // Create User
+    // ======================
     public function create()
     {
         return view('admin/user_form', [
@@ -51,43 +67,48 @@ class Admin extends BaseController
         ]);
     }
 
-    // store new user
+    // ======================
+    // Store User
+    // ======================
     public function store()
     {
         $rules = [
-            'name' => 'required|min_length[3]',
-            'email' => 'required|valid_email|is_unique[users.email]',
+            'name'     => 'required|min_length[3]',
+            'email'    => 'required|valid_email|is_unique[users.email]',
             'password' => 'required|min_length[6]',
-            'role' => 'required|in_list[teacher,student]', // Only allow teacher and student
+            'role'     => 'required|in_list[teacher,student]',
         ];
 
-        if (! $this->validate($rules)) {
+        if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
-        // Ensure only one admin exists - prevent creating admin accounts
         $role = $this->request->getPost('role');
         if ($role === 'admin') {
-            session()->setFlashdata('error', 'Cannot create additional admin accounts. Only one admin is allowed.');
+            session()->setFlashdata('error', 'Cannot create additional admin accounts.');
             return redirect()->back()->withInput();
         }
 
         $this->userModel->insert([
-            'name' => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role' => $role,
+            'name'          => $this->request->getPost('name'),
+            'email'         => $this->request->getPost('email'),
+            'password'      => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+            'role'          => $role,
+            'is_restricted' => 0,
+            'is_deleted'    => 0,
         ]);
 
         session()->setFlashdata('success', 'User created successfully.');
         return redirect()->to(base_url('/admin/dashboard'));
     }
 
-    // edit form
+    // ======================
+    // Edit User
+    // ======================
     public function edit($id = null)
     {
         $user = $this->userModel->find($id);
-        if (! $user) {
+        if (!$user) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException("User not found: {$id}");
         }
 
@@ -99,15 +120,16 @@ class Admin extends BaseController
         ]);
     }
 
-    // update existing user
+    // ======================
+    // Update User
+    // ======================
     public function update($id = null)
     {
         $user = $this->userModel->find($id);
-        if (! $user) {
+        if (!$user) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException("User not found: {$id}");
         }
 
-        // Prevent modifying the current admin account's role
         $currentAdminId = session()->get('user_id');
         if ($user['id'] == $currentAdminId && $user['role'] === 'admin') {
             session()->setFlashdata('error', 'Cannot modify your own admin account.');
@@ -120,9 +142,9 @@ class Admin extends BaseController
         }
 
         $rules = [
-            'name' => 'required|min_length[3]',
+            'name'  => 'required|min_length[3]',
             'email' => $emailRule,
-            'role' => 'required|in_list[teacher,student]', // Only allow teacher and student
+            'role'  => 'required|in_list[teacher,student]',
         ];
 
         $password = $this->request->getPost('password');
@@ -130,27 +152,20 @@ class Admin extends BaseController
             $rules['password'] = 'min_length[6]';
         }
 
-        if (! $this->validate($rules)) {
+        if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
-        // Prevent changing role to admin
         $newRole = $this->request->getPost('role');
         if ($newRole === 'admin') {
-            session()->setFlashdata('error', 'Cannot change user role to admin. Only one admin account is allowed.');
-            return redirect()->back()->withInput();
-        }
-
-        // Prevent changing admin user's role
-        if ($user['role'] === 'admin' && $newRole !== 'admin') {
-            session()->setFlashdata('error', 'Cannot change admin account role.');
+            session()->setFlashdata('error', 'Cannot assign admin role.');
             return redirect()->back()->withInput();
         }
 
         $updateData = [
-            'name' => $this->request->getPost('name'),
+            'name'  => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
-            'role' => $newRole,
+            'role'  => $newRole,
         ];
 
         if ($password) {
@@ -158,36 +173,54 @@ class Admin extends BaseController
         }
 
         $this->userModel->update($id, $updateData);
-
         session()->setFlashdata('success', 'User updated successfully.');
         return redirect()->to(base_url('/admin/dashboard'));
     }
 
-    // delete user
+    // ======================
+    // Restrict / Unrestrict
+    // ======================
+    public function restrict($id = null)
+    {
+        $user = $this->userModel->find($id);
+        if (!$user) {
+            session()->setFlashdata('error', 'User not found.');
+            return redirect()->to(base_url('/admin/dashboard'));
+        }
+
+        if ($user['role'] === 'admin') {
+            session()->setFlashdata('error', 'Cannot restrict admin account.');
+            return redirect()->to(base_url('/admin/dashboard'));
+        }
+
+        $newStatus = $user['is_restricted'] ? 0 : 1;
+        $this->userModel->update($id, ['is_restricted' => $newStatus]);
+
+        $msg = $newStatus ? 'User restricted successfully.' : 'User unrestricted successfully.';
+        session()->setFlashdata('success', $msg);
+
+        return redirect()->to(base_url('/admin/dashboard'));
+    }
+
+    // ======================
+    // Soft Delete User
+    // ======================
     public function delete($id = null)
     {
         $user = $this->userModel->find($id);
-        if (! $user) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("User not found: {$id}");
+        if (!$user) {
+            session()->setFlashdata('error', 'User not found.');
+            return redirect()->to(base_url('/admin/dashboard'));
         }
 
-        // Prevent deleting admin account
         if ($user['role'] === 'admin') {
             session()->setFlashdata('error', 'Cannot delete admin account.');
             return redirect()->to(base_url('/admin/dashboard'));
         }
 
-        // Prevent deleting yourself
-        $currentUserId = session()->get('user_id');
-        if ($user['id'] == $currentUserId) {
-            session()->setFlashdata('error', 'Cannot delete your own account.');
-            return redirect()->to(base_url('/admin/dashboard'));
-        }
+        $this->userModel->update($id, ['is_deleted' => 1]);
+        session()->setFlashdata('success', 'User removed from dashboard view.');
 
-        $this->userModel->delete($id);
-        session()->setFlashdata('success', 'User deleted successfully.');
         return redirect()->to(base_url('/admin/dashboard'));
     }
 }
-
-

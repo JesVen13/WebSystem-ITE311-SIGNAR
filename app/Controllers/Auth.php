@@ -66,9 +66,7 @@ class Auth extends Controller
         return redirect()->back()->withInput();
     }
 
-    // =========================
     // Login Page
-    // =========================
     public function login()
     {
         if ($this->request->getMethod() === 'post') {
@@ -78,9 +76,7 @@ class Auth extends Controller
         return view('auth/login');
     }
 
-    // =========================
-    // Handle Login (Fixed: now public)
-    // =========================
+    // Handle Login
     public function attemptLogin()
     {
         $session = session();
@@ -115,9 +111,7 @@ class Auth extends Controller
         return redirect()->back()->with('error', 'Invalid login credentials.');
     }
 
-    // =========================
     // Dashboard
-    // =========================
     public function dashboard()
     {
         $session = session();
@@ -158,9 +152,7 @@ class Auth extends Controller
         return view('auth/dashboard', $data);
     }
 
-    // =========================
     // Logout
-    // =========================
     public function logout()
     {
         $session = session();

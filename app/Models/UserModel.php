@@ -10,12 +10,24 @@ class UserModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
-        'name',
-        'email',
-        'password',
-        'role'
+        'name', 'email', 'password', 'role', 'is_restricted', 'is_deleted'
     ];
 
-    protected $useTimestamps = true; 
+    protected $useTimestamps = true;
+
+    public function getActiveUsers()
+    {
+        return $this->where('is_restricted', 0)
+                    ->where('is_deleted', 0)
+                    ->orderBy('created_at', 'DESC')
+                    ->findAll();
+    }
+
+    public function getRestrictedUsers()
+    {
+        return $this->where('is_restricted', 1)
+                    ->where('is_deleted', 0)
+                    ->orderBy('created_at', 'DESC')
+                    ->findAll();
+    }
 }
- 
