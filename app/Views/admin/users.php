@@ -66,6 +66,8 @@
                     <!-- EDIT -->
                     <a href="<?= base_url("/admin/edit/{$u['id']}") ?>"
                        class="btn btn-sm btn-warning">Edit</a>
+
+                    <!-- RESTRICT / UNRESTRICT (hidden for admin) -->
                     <?php if ($u['role'] !== 'admin'): ?>
                         <?php if ($u['is_restricted'] == 1): ?>
                             <a href="<?= base_url("/admin/restrict/{$u['id']}") ?>"
