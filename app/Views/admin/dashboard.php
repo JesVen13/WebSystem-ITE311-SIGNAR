@@ -156,8 +156,7 @@
                 </thead>
                 <tbody>
                 <?php if (!empty($users)): foreach ($users as $u): 
-                    $isAdminUser = $u['role'] === 'admin';
-                    $isCurrentUser = $u['id'] == session()->get('user_id');
+                    $isCurrentUser = $u['id'] == ($currentUserId ?? session()->get('user_id'));
 
                     $badgeClass = match ($u['role']) {
                         'admin' => 'bg-dark',
@@ -177,17 +176,20 @@
                         <td><span class="badge <?= $badgeClass ?>"><?= ucfirst($u['role']) ?></span></td>
                         <td><?= date('M d, Y', strtotime($u['created_at'])) ?></td>
                         <td>
-                            <?php if (!$isAdminUser && !$isCurrentUser): ?>
-                                <a href="<?= base_url('/admin/edit/'.$u['id']) ?>" class="btn btn-warning btn-sm apple-btn">Edit</a>
+                            <!-- Edit button: Always available for all users -->
+                            <a href="<?= base_url('/admin/edit/'.$u['id']) ?>" class="btn btn-warning btn-sm apple-btn">Edit</a>
+                            
+                            <?php if (!$isCurrentUser): ?>
+                                <!-- Restrict/Unrestrict: Only visible for other users, not yourself -->
                                 <a href="<?= base_url('/admin/restrict/'.$u['id']) ?>" 
                                    class="btn btn-sm <?= $u['is_restricted'] ? 'btn-success' : 'btn-secondary' ?> apple-btn">
                                    <?= $u['is_restricted'] ? 'Unrestrict' : 'Restrict' ?>
                                 </a>
+                                
+                                <!-- Delete: Only visible for other users, not yourself -->
                                 <a href="<?= base_url('/admin/delete/'.$u['id']) ?>" 
                                    class="btn btn-danger btn-sm apple-btn"
                                    onclick="return confirm('Remove <?= esc($u['name']) ?>?');">Delete</a>
-                            <?php else: ?>
-                                <span class="text-muted">Protected</span>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -217,15 +219,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($restrictedUsers as $r): ?>
+                    <?php foreach ($restrictedUsers as $r): 
+                        $isCurrentUser = $r['id'] == ($currentUserId ?? session()->get('user_id'));
+                    ?>
                         <tr>
                             <td><?= esc($r['id']) ?></td>
-                            <td><?= esc($r['name']) ?></td>
+                            <td>
+                                <?= esc($r['name']) ?>
+                                <?php if ($isCurrentUser): ?>
+                                    <span class="badge bg-primary">You</span>
+                                <?php endif; ?>
+                            </td>
                             <td><?= esc($r['email']) ?></td>
                             <td><span class="badge bg-secondary"><?= ucfirst($r['role']) ?></span></td>
                             <td><?= date('M d, Y', strtotime($r['updated_at'])) ?></td>
                             <td>
-                                <a href="<?= base_url('/admin/restrict/'.$r['id']) ?>" class="btn btn-success btn-sm apple-btn">Unrestrict</a>
+                                <?php if (!$isCurrentUser): ?>
+                                    <a href="<?= base_url('/admin/restrict/'.$r['id']) ?>" class="btn btn-success btn-sm apple-btn">Unrestrict</a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

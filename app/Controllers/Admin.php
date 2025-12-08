@@ -24,6 +24,14 @@ class Admin extends BaseController
         }
     }
 
+    // ===========================
+    // CHECK IF USER IS SELF
+    // ===========================
+    private function isSelf($userId)
+    {
+        return session()->get('user_id') == $userId;
+    }
+
     // ======================
     // DASHBOARD
     // ======================
@@ -57,11 +65,12 @@ class Admin extends BaseController
             'totalTeachers'   => $totalTeachers,
             'totalStudents'   => $totalStudents,
             'totalAdmins'     => $totalAdmins,
+            'currentUserId'   => session()->get('user_id') // Added for view logic
         ]);
     }
 
     // ======================
-    // USERS LIST (SEARCH + PAGINATION)
+    // USERS LIST 
     // ======================
     public function users()
     {
@@ -79,11 +88,12 @@ class Admin extends BaseController
         }
 
         return view('admin/users', [
-            'name'   => session()->get('name'),
-            'role'   => session()->get('role'),
-            'users'  => $query->paginate(10),
-            'pager'  => $this->userModel->pager,
-            'search' => $keyword
+            'name'          => session()->get('name'),
+            'role'          => session()->get('role'),
+            'users'         => $query->paginate(10),
+            'pager'         => $this->userModel->pager,
+            'search'        => $keyword,
+            'currentUserId' => session()->get('user_id') // Added for view logic
         ]);
     }
 
@@ -147,7 +157,7 @@ class Admin extends BaseController
             'name'     => 'required|min_length[3]',
             'email'    => 'required|valid_email|is_unique[users.email]',
             'password' => 'required|min_length[6]',
-            'role'     => 'required|in_list[teacher,student]'
+            'role'     => 'required|in_list[teacher,student,admin]' // Added admin to allowed roles
         ];
 
         if (!$this->validate($rules)) {
@@ -184,7 +194,8 @@ class Admin extends BaseController
             'name'       => session()->get('name'),
             'role'       => session()->get('role'),
             'user'       => $user,
-            'validation' => \Config\Services::validation()
+            'validation' => \Config\Services::validation(),
+            'isSelf'     => $this->isSelf($id) // Added to control form behavior
         ]);
     }
 
@@ -209,7 +220,7 @@ class Admin extends BaseController
         $rules = [
             'name'  => 'required|min_length[3]',
             'email' => $emailRule,
-            'role'  => 'required|in_list[teacher,student]'
+            'role'  => 'required|in_list[teacher,student,admin]'
         ];
 
         if ($this->request->getPost('password')) {
@@ -236,9 +247,7 @@ class Admin extends BaseController
         return redirect()->to('/admin/users');
     }
 
-    // ======================
     // RESTRICT / UNRESTRICT
-    // ======================
     public function restrict($id)
     {
         $this->adminOnly();
@@ -250,8 +259,9 @@ class Admin extends BaseController
             return redirect()->back();
         }
 
-        if ($user['role'] === 'admin') {
-            session()->setFlashdata('error', 'Cannot restrict admin account.');
+        // CHANGED: Cannot restrict yourself
+        if ($this->isSelf($id)) {
+            session()->setFlashdata('error', 'Cannot restrict your own account.');
             return redirect()->back();
         }
 
@@ -280,12 +290,10 @@ class Admin extends BaseController
             session()->setFlashdata('error', 'User not found.');
             return redirect()->back();
         }
-
-        if ($user['role'] === 'admin') {
-            session()->setFlashdata('error', 'Cannot delete admin account.');
+        if ($this->isSelf($id)) {
+            session()->setFlashdata('error', 'Cannot delete your own account.');
             return redirect()->back();
         }
-
         $this->userModel->update($id, ['is_deleted' => 1]);
 
         session()->setFlashdata('success', 'User deleted successfully.');

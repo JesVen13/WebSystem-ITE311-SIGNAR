@@ -79,21 +79,12 @@
                 <label class="form-label">Role</label>
                 <?php 
                 $sel = old('role', $user['role'] ?? ''); 
-                $isAdmin = isset($user['role']) && $user['role'] === 'admin';
                 ?>
-                <select name="role" class="form-select" <?= $isAdmin ? 'disabled' : '' ?>>
-                    <?php if ($isAdmin): ?>
-                        <option value="admin" selected>admin (Cannot be changed)</option>
-                    <?php else: ?>
-                        <option value="teacher" <?= $sel === 'teacher' ? 'selected' : '' ?>>Teacher</option>
-                        <option value="student" <?= $sel === 'student' ? 'selected' : '' ?>>Student</option>
-                    <?php endif; ?>
+                <select name="role" class="form-select">
+                    <option value="teacher" <?= $sel === 'teacher' ? 'selected' : '' ?>>Teacher</option>
+                    <option value="student" <?= $sel === 'student' ? 'selected' : '' ?>>Student</option>
+                    <option value="admin" <?= $sel === 'admin' ? 'selected' : '' ?>>Admin</option>
                 </select>
-
-                <?php if ($isAdmin): ?>
-                    <input type="hidden" name="role" value="admin">
-                    <small class="text-muted">Admin role cannot be changed</small>
-                <?php endif; ?>
 
                 <?php if ($validation->getError('role')): ?>
                     <div class="text-danger small"><?= $validation->getError('role') ?></div>
