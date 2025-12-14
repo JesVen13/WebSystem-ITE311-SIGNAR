@@ -65,7 +65,7 @@ class Admin extends BaseController
             'totalTeachers'   => $totalTeachers,
             'totalStudents'   => $totalStudents,
             'totalAdmins'     => $totalAdmins,
-            'currentUserId'   => session()->get('user_id') // Added for view logic
+            'currentUserId'   => session()->get('user_id')
         ]);
     }
 
@@ -93,7 +93,7 @@ class Admin extends BaseController
             'users'         => $query->paginate(10),
             'pager'         => $this->userModel->pager,
             'search'        => $keyword,
-            'currentUserId' => session()->get('user_id') // Added for view logic
+            'currentUserId' => session()->get('user_id')
         ]);
     }
 
@@ -104,11 +104,16 @@ class Admin extends BaseController
     {
         $this->adminOnly();
 
+        $deletedUsers = $this->userModel
+            ->where('is_deleted', 1)
+            ->orderBy('updated_at', 'DESC')
+            ->paginate(10);
+
         return view('admin/deleted_users', [
-            'name'  => session()->get('name'),
-            'role'  => session()->get('role'),
-            'users' => $this->userModel->where('is_deleted', 1)->paginate(10),
-            'pager' => $this->userModel->pager
+            'name'         => session()->get('name'),
+            'role'         => session()->get('role'),
+            'deletedUsers' => $deletedUsers,
+            'pager'        => $this->userModel->pager
         ]);
     }
 
@@ -123,9 +128,82 @@ class Admin extends BaseController
 
         if (!$user) {
             session()->setFlashdata('error', 'User not found.');
+        } elseif ($user['is_deleted'] != 1) {
+            session()->setFlashdata('error', 'This user is not deleted.');
         } else {
             $this->userModel->update($id, ['is_deleted' => 0]);
             session()->setFlashdata('success', 'User restored successfully.');
+        }
+
+        return redirect()->to('/admin/deleted-users');
+    }
+
+    // ======================
+    // PERMANENT DELETE USER
+    // ======================
+    public function permanentDelete($id)
+    {
+        $this->adminOnly();
+
+        $user = $this->userModel->find($id);
+
+        if (!$user) {
+            session()->setFlashdata('error', 'User not found.');
+            return redirect()->to('/admin/deleted-users');
+        }
+
+        if ($this->isSelf($id)) {
+            session()->setFlashdata('error', 'Cannot permanently delete your own account.');
+            return redirect()->to('/admin/deleted-users');
+        }
+
+        if ($user['is_deleted'] != 1) {
+            session()->setFlashdata('error', 'Only deleted users can be permanently removed.');
+            return redirect()->to('/admin/deleted-users');
+        }
+
+        // Hard delete from database
+        if ($this->userModel->delete($id, true)) {
+            session()->setFlashdata('success', 'User permanently deleted from database.');
+        } else {
+            session()->setFlashdata('error', 'Failed to permanently delete user.');
+        }
+
+        return redirect()->to('/admin/deleted-users');
+    }
+
+    // ======================
+    // PURGE ALL DELETED USERS
+    // ======================
+    public function purgeAll()
+    {
+        $this->adminOnly();
+
+        $deletedUsers = $this->userModel->where('is_deleted', 1)->findAll();
+
+        if (empty($deletedUsers)) {
+            session()->setFlashdata('error', 'No deleted users to purge.');
+            return redirect()->to('/admin/deleted-users');
+        }
+
+        $currentUserId = session()->get('user_id');
+        $count = 0;
+
+        foreach ($deletedUsers as $user) {
+            // Skip if somehow current user is in deleted list
+            if ($user['id'] == $currentUserId) {
+                continue;
+            }
+
+            if ($this->userModel->delete($user['id'], true)) {
+                $count++;
+            }
+        }
+
+        if ($count > 0) {
+            session()->setFlashdata('success', "Successfully purged {$count} user(s) permanently.");
+        } else {
+            session()->setFlashdata('error', 'No users were purged.');
         }
 
         return redirect()->to('/admin/deleted-users');
@@ -157,7 +235,7 @@ class Admin extends BaseController
             'name'     => 'required|min_length[3]',
             'email'    => 'required|valid_email|is_unique[users.email]',
             'password' => 'required|min_length[6]',
-            'role'     => 'required|in_list[teacher,student,admin]' // Added admin to allowed roles
+            'role'     => 'required|in_list[teacher,student,admin]'
         ];
 
         if (!$this->validate($rules)) {
@@ -195,7 +273,7 @@ class Admin extends BaseController
             'role'       => session()->get('role'),
             'user'       => $user,
             'validation' => \Config\Services::validation(),
-            'isSelf'     => $this->isSelf($id) // Added to control form behavior
+            'isSelf'     => $this->isSelf($id)
         ]);
     }
 
@@ -247,7 +325,9 @@ class Admin extends BaseController
         return redirect()->to('/admin/users');
     }
 
+    // ======================
     // RESTRICT / UNRESTRICT
+    // ======================
     public function restrict($id)
     {
         $this->adminOnly();
@@ -259,7 +339,6 @@ class Admin extends BaseController
             return redirect()->back();
         }
 
-        // CHANGED: Cannot restrict yourself
         if ($this->isSelf($id)) {
             session()->setFlashdata('error', 'Cannot restrict your own account.');
             return redirect()->back();
@@ -274,6 +353,11 @@ class Admin extends BaseController
             $newStatus ? 'User restricted.' : 'User unrestricted.'
         );
 
+        // Smart redirect
+        $referer = $this->request->getServer('HTTP_REFERER');
+        if ($referer && (strpos($referer, '/admin/dashboard') !== false)) {
+            return redirect()->to('/admin/dashboard');
+        }
         return redirect()->to('/admin/users');
     }
 
@@ -290,13 +374,21 @@ class Admin extends BaseController
             session()->setFlashdata('error', 'User not found.');
             return redirect()->back();
         }
+
         if ($this->isSelf($id)) {
             session()->setFlashdata('error', 'Cannot delete your own account.');
             return redirect()->back();
         }
+
         $this->userModel->update($id, ['is_deleted' => 1]);
 
         session()->setFlashdata('success', 'User deleted successfully.');
+        
+        // Smart redirect
+        $referer = $this->request->getServer('HTTP_REFERER');
+        if ($referer && (strpos($referer, '/admin/dashboard') !== false)) {
+            return redirect()->to('/admin/dashboard');
+        }
         return redirect()->to('/admin/users');
     }
 }

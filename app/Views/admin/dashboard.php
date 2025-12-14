@@ -1,253 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Admin Dashboard</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<style>
-    body {
-        background: #f5f5f7;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    h1, h5 {
-        font-weight: 600;
-    }
-
-    .card-apple {
-        border: none;
-        border-radius: 20px;
-        background: #fff;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        transition: .2s;
-    }
-
-    .card-apple:hover {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.09);
-    }
-
-    .stat-number {
-        font-size: 34px;
-        font-weight: 700;
-        color: #111;
-    }
-
-    .table thead {
-        border-bottom: 2px solid #e5e5e5;
-    }
-
-    .badge {
-        padding: 6px 10px;
-        font-size: 0.75rem;
-    }
-
-    .apple-btn {
-        border-radius: 12px;
-        padding: 6px 16px;
-        font-weight: 500;
-    }
-
-    .btn-primary {
-        background: #0071e3;
-        border: none;
-    }
-    .btn-primary:hover {
-        background: #0a83ff;
-    }
-
-    .btn-danger {
-        background: #d70015;
-        border: none;
-    }
-    .btn-danger:hover {
-        background: #ff2d3b;
-    }
-
-    .btn-warning {
-        background: #ff9f0a;
-        border: none;
-    }
-    .btn-warning:hover {
-        background: #ffb23d;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SIGNAR</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-
-<body class="p-4">
-<div class="container">
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Admin Dashboard</h1>
-
-        <div>
-            <span class="me-3">Logged in as <strong><?= esc($name) ?></strong> (Admin)</span>
-            <a href="<?= base_url('/admin/create') ?>" class="btn btn-primary apple-btn">Create User</a>
-            <a href="<?= base_url('/logout') ?>" class="btn btn-secondary apple-btn">Logout</a>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="<?= site_url('/admin/dashboard') ?>">
+                <i class="fas fa-graduation-cap me-2"></i>  Admin Dashboard
+            </a>
+        <div class="navbar-nav ms-auto">
+            <span class="navbar-text text-white me-3">
+                <i class="fas fa-user-circle me-1"></i><?= esc($name) ?>
+            </span>
+            <a class="nav-link btn btn-outline-light btn-sm" href="<?= site_url('/logout') ?>">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+            </a>
         </div>
     </div>
+</nav>
 
-    <!-- Flash Messages -->
-    <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?= session()->getFlashdata('success') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <?= session()->getFlashdata('error') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-
-    <!-- Stats -->
-    <div class="row g-4 mb-4">
-
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar Menu -->
         <div class="col-md-3">
-            <div class="card card-apple p-3">
-                <h5>Total Users</h5>
-                <div class="stat-number"><?= $totalUsers ?? 0 ?></div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="<?= site_url('/admin/dashboard') ?>" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                    <a href="<?= site_url('/admin/users') ?>" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i>Manage Users
+                    </a>
+                    <a href="<?= site_url('/admin/deleted-users') ?>" class="list-group-item list-group-item-action">
+                        <i class="fas fa-trash me-2"></i>Deleted Users
+                    </a>
+                    <a href="<?= site_url('/admin/create') ?>" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus me-2"></i>Create User
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card card-apple p-3">
-                <h5>Teachers</h5>
-                <div class="stat-number"><?= $totalTeachers ?? 0 ?></div>
+        <!-- Main Content -->
+        <div class="col-md-9">
+            
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"><?= $totalUsers ?></h5>
+                            <p class="card-text">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-success"><?= $totalTeachers ?></h5>
+                            <p class="card-text">Teachers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-info"><?= $totalStudents ?></h5>
+                            <p class="card-text">Students</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning"><?= $totalAdmins ?></h5>
+                            <p class="card-text">Admins</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <div class="card card-apple p-3">
-                <h5>Students</h5>
-                <div class="stat-number"><?= $totalStudents ?? 0 ?></div>
+            <!-- Active Users Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Active Users</h5>
+                </div>
+                <div class="card-body">
+                    <?php if (empty($users)): ?>
+                        <p class="text-muted">No active users</p>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($users as $user): 
+                                        $isCurrentUser = $user['id'] == $currentUserId;
+                                    ?>
+                                        <tr>
+                                            <td>
+                                                <?= esc($user['name']) ?>
+                                                <?php if ($isCurrentUser): ?>
+                                                    <span class="badge bg-primary">You</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= esc($user['email']) ?></td>
+                                            <td>
+                                                <span class="badge bg-<?= $user['role'] === 'admin' ? 'danger' : ($user['role'] === 'teacher' ? 'success' : 'primary') ?>">
+                                                    <?= esc($user['role']) ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">Active</span>
+                                            </td>
+                                            <td>
+                                                <!-- Edit Button - Always visible -->
+                                                <a href="<?= site_url('/admin/edit/' . $user['id']) ?>" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                
+                                                <?php if (!$isCurrentUser): ?>
+                                                    <!-- Restrict Button - Only for others -->
+                                                    <a href="<?= site_url('/admin/restrict/' . $user['id']) ?>" class="btn btn-sm btn-outline-warning" 
+                                                       onclick="return confirm('Are you sure you want to restrict this user?')">
+                                                        <i class="fas fa-ban"></i>
+                                                    </a>
+                                                    
+                                                    <!-- Delete Button - Only for others -->
+                                                    <a href="<?= site_url('/admin/delete/' . $user['id']) ?>" class="btn btn-sm btn-outline-danger"
+                                                       onclick="return confirm('Are you sure you want to delete this user?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <div class="card card-apple p-3">
-                <h5>Admins</h5>
-                <div class="stat-number"><?= $totalAdmins ?? 0 ?></div>
-            </div>
-        </div>
+            <!-- Restricted Users Table -->
+            <?php if (!empty($restrictedUsers)): ?>
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user-slash me-2"></i>Restricted Users</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($restrictedUsers as $user): 
+                                        $isCurrentUser = $user['id'] == $currentUserId;
+                                    ?>
+                                        <tr>
+                                            <td>
+                                                <?= esc($user['name']) ?>
+                                                <?php if ($isCurrentUser): ?>
+                                                    <span class="badge bg-primary">You</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= esc($user['email']) ?></td>
+                                            <td>
+                                                <span class="badge bg-<?= $user['role'] === 'admin' ? 'danger' : ($user['role'] === 'teacher' ? 'success' : 'primary') ?>">
+                                                    <?= esc($user['role']) ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-warning">Restricted</span>
+                                            </td>
+                                            <td>
+                                                <?php if (!$isCurrentUser): ?>
+                                                    <a href="<?= site_url('/admin/restrict/' . $user['id']) ?>" class="btn btn-sm btn-outline-success"
+                                                       onclick="return confirm('Are you sure you want to unrestrict this user?')">
+                                                        <i class="fas fa-check"></i> Unrestrict
+                                                    </a>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
 
+        </div>
     </div>
-
-    <!-- Active Users -->
-    <div class="card card-apple p-3 mb-5">
-        <h5 class="mb-3">Active Users</h5>
-
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead class="bg-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Registered</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php if (!empty($users)): foreach ($users as $u): 
-                    $isCurrentUser = $u['id'] == ($currentUserId ?? session()->get('user_id'));
-
-                    $badgeClass = match ($u['role']) {
-                        'admin' => 'bg-dark',
-                        'teacher' => 'bg-success',
-                        default => 'bg-info'
-                    };
-                ?>
-                    <tr>
-                        <td><?= esc($u['id']) ?></td>
-                        <td>
-                            <?= esc($u['name']) ?>
-                            <?php if ($isCurrentUser): ?>
-                                <span class="badge bg-primary">You</span>
-                            <?php endif; ?>
-                        </td>
-                        <td><?= esc($u['email']) ?></td>
-                        <td><span class="badge <?= $badgeClass ?>"><?= ucfirst($u['role']) ?></span></td>
-                        <td><?= date('M d, Y', strtotime($u['created_at'])) ?></td>
-                        <td>
-                            <!-- Edit button: Always available for all users -->
-                            <a href="<?= base_url('/admin/edit/'.$u['id']) ?>" class="btn btn-warning btn-sm apple-btn">Edit</a>
-                            
-                            <?php if (!$isCurrentUser): ?>
-                                <!-- Restrict/Unrestrict: Only visible for other users, not yourself -->
-                                <a href="<?= base_url('/admin/restrict/'.$u['id']) ?>" 
-                                   class="btn btn-sm <?= $u['is_restricted'] ? 'btn-success' : 'btn-secondary' ?> apple-btn">
-                                   <?= $u['is_restricted'] ? 'Unrestrict' : 'Restrict' ?>
-                                </a>
-                                
-                                <!-- Delete: Only visible for other users, not yourself -->
-                                <a href="<?= base_url('/admin/delete/'.$u['id']) ?>" 
-                                   class="btn btn-danger btn-sm apple-btn"
-                                   onclick="return confirm('Remove <?= esc($u['name']) ?>?');">Delete</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; else: ?>
-                    <tr><td colspan="6" class="text-center text-muted">No active users found.</td></tr>
-                <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Restricted Users -->
-    <div class="card card-apple p-3 border-danger">
-        <h5 class="mb-3 text-danger">Restricted Users</h5>
-
-        <?php if (!empty($restrictedUsers)): ?>
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Restricted Since</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($restrictedUsers as $r): 
-                        $isCurrentUser = $r['id'] == ($currentUserId ?? session()->get('user_id'));
-                    ?>
-                        <tr>
-                            <td><?= esc($r['id']) ?></td>
-                            <td>
-                                <?= esc($r['name']) ?>
-                                <?php if ($isCurrentUser): ?>
-                                    <span class="badge bg-primary">You</span>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= esc($r['email']) ?></td>
-                            <td><span class="badge bg-secondary"><?= ucfirst($r['role']) ?></span></td>
-                            <td><?= date('M d, Y', strtotime($r['updated_at'])) ?></td>
-                            <td>
-                                <?php if (!$isCurrentUser): ?>
-                                    <a href="<?= base_url('/admin/restrict/'.$r['id']) ?>" class="btn btn-success btn-sm apple-btn">Unrestrict</a>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php else: ?>
-            <p class="text-muted text-center">No restricted users.</p>
-        <?php endif; ?>
-    </div>
-
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

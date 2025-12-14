@@ -39,6 +39,12 @@
                         </select>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="password" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+                        <small class="text-muted">Only fill this if you want to change the password</small>
+                    </div>
+
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Update User</button>
                         <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-secondary mt-2">Cancel</a>

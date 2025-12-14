@@ -12,14 +12,14 @@ class CoursesSeeder extends Seeder
             [
                 'title'        => 'Websystem 101',
                 'description'  => 'Basic WebSystem Development',
-                'instructor_id'=> 2, // Teacher the kupal (user_id 2)
+                'instructor_id'=> 2, 
                 'created_at'   => date('Y-m-d H:i:s'),
                 'updated_at'   => date('Y-m-d H:i:s'),
             ],
             [
                 'title'        => 'Database 101',
                 'description'  => 'Basic Database Management',
-                'instructor_id'=> 2, // Teacher the kupal (user_id 2)
+                'instructor_id'=> 2, 
                 'created_at'   => date('Y-m-d H:i:s'),
                 'updated_at'   => date('Y-m-d H:i:s'),
             ],
