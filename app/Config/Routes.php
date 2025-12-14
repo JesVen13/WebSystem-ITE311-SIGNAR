@@ -25,12 +25,14 @@ $routes->group('admin', ['filter' => 'role:admin'], function ($routes) {
     $routes->get('edit/(:num)', 'Admin::edit/$1');
     $routes->post('update/(:num)', 'Admin::update/$1');
     $routes->get('delete/(:num)', 'Admin::delete/$1');
-    $routes->get('restrict/(:num)', 'Admin::restrict/$1'); // ✅ new route added
+    $routes->get('restrict/(:num)', 'Admin::restrict/$1'); 
 });
 
 // Teacher routes (Protected by role:teacher)
 $routes->group('teacher', ['filter' => 'role:teacher'], function ($routes) {
     $routes->get('dashboard', 'Teacher::dashboard');
+    $routes->get('courses/create', 'Teacher::createCourse');
+    $routes->post('courses', 'Teacher::storeCourse');
 });
 
 // Student routes (Protected by role:student)
@@ -38,4 +40,9 @@ $routes->group('student', ['filter' => 'role:student'], function ($routes) {
     $routes->get('dashboard', 'Student::dashboard');
     // Student-only announcements page
     $routes->get('announcements', 'Announcement::index');
+    // Course enrollment
+    $routes->post('enroll/(:num)', 'Student::enroll/$1');
 });
+
+// AJAX enrollment endpoint
+$routes->post('course/enroll', 'Course::enroll');

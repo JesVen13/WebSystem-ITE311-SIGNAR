@@ -38,12 +38,52 @@ class Teacher extends BaseController
             $pendingSubmissions = $builder->countAllResults();
         }
 
-        return view('teacher_dashboard', [
+        return view('teacher/teacher_dashboard', [
             'myCourses' => $myCourses,
             'courseCount' => count($courseIds),
             'lessonsCount' => $lessonsCount,
             'pendingSubmissions' => $pendingSubmissions,
         ]);
+    }
+
+    public function createCourse()
+    {
+        return view('teacher/create_course', [
+            'title' => 'Create Course',
+            'errors' => session()->getFlashdata('errors') ?? [],
+        ]);
+    }
+
+    public function storeCourse()
+    {
+        $userId = session()->get('user_id');
+        $role = session()->get('role');
+        if (! $userId || $role !== 'teacher') {
+            return redirect()->to(base_url('login'));
+        }
+
+        $rules = [
+            'title' => 'required|min_length[3]|max_length[200]',
+            'description' => 'permit_empty|max_length[5000]',
+        ];
+
+        if (! $this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $courses = new CourseModel();
+
+        $ok = $courses->insert([
+            'title' => (string) $this->request->getPost('title'),
+            'description' => (string) ($this->request->getPost('description') ?? ''),
+            'instructor_id' => (int) $userId,
+        ]);
+
+        if (! $ok) {
+            return redirect()->back()->withInput()->with('error', 'Failed to create course. Please try again.');
+        }
+
+        return redirect()->to(base_url('teacher/dashboard'))->with('success', 'Course created successfully.');
     }
 }
 

@@ -6,6 +6,9 @@
       <h1 class="h3 mb-0">Teacher Dashboard</h1>
       <small class="text-muted">Minimalist overview</small>
     </div>
+    <div>
+      <a href="<?= base_url('teacher/courses/create') ?>" class="btn btn-primary btn-sm">Create Course</a>
+    </div>
   </div>
 
   <div class="row g-3">
