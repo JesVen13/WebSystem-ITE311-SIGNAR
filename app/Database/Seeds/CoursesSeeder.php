@@ -11,15 +11,20 @@ class CoursesSeeder extends Seeder
         $data = [
             [
                 'title'        => 'Websystem 101',
-                'description'  => 'Basic WebSystem',
-                'instructor_id'=> 3,
+                'description'  => 'Basic WebSystem Development',
+                'instructor_id'=> 2, // Teacher the kupal (user_id 2)
+                'created_at'   => date('Y-m-d H:i:s'),
+                'updated_at'   => date('Y-m-d H:i:s'),
             ],
             [
-                'title'        => 'DataBase 101',
-                'description'  => 'Basic Database',
-                'instructor_id'=> 4,
+                'title'        => 'Database 101',
+                'description'  => 'Basic Database Management',
+                'instructor_id'=> 2, // Teacher the kupal (user_id 2)
+                'created_at'   => date('Y-m-d H:i:s'),
+                'updated_at'   => date('Y-m-d H:i:s'),
             ],
         ];
-        $this->db->table(tableName: 'courses')->insertBatch(set: $data);
+        
+        $this->db->table('courses')->insertBatch($data);
     }
 }

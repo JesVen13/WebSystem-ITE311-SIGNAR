@@ -83,7 +83,11 @@ class Course extends BaseController
         return $this->response->setJSON([
             'success' => true,
             'message' => 'Successfully enrolled in the course!',
-            'course' => $course,
+            'course' => [
+                'id' => $course['id'],
+                'title' => $course['title'],
+                'description' => $course['description']
+            ],
             'csrfHash' => csrf_hash(),
         ]);
     }

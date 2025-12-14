@@ -58,6 +58,10 @@ class Teacher extends BaseController
     {
         $userId = session()->get('user_id');
         $role = session()->get('role');
+        
+        // Debug: Log session values
+        log_message('debug', 'Teacher session - user_id: ' . $userId . ', role: ' . $role);
+        
         if (! $userId || $role !== 'teacher') {
             return redirect()->to(base_url('login'));
         }
