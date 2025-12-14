@@ -2,75 +2,251 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Simple & Clean</title>
     <style>
-        body {
-            background: #5f84bbff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .card {
-            width: 400px;
-            border-radius: 15px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 32px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            color: #1a202c;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .login-header p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 400;
+            color: #4a5568;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .submit-btn:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #718096;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
         }
     </style>
 </head>
 <body>
-    <div class="card p-4">
-        <h2 class="text-center mb-4">Login</h2>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Welcome to LMS-system</h1>
+            <p>Please login to your account</p>
+        </div>
 
-        <?php if(session()->getFlashdata('success')): ?>
-            <div class="alert alert-success"><?= session()->getFlashdata('success'); ?></div>
-        <?php endif; ?>
-
-        <?php if(session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger"><?= session()->getFlashdata('error'); ?></div>
-        <?php endif; ?>
-
-        <form method="post" action="<?= site_url('login') ?>">
+        <form method="post" action="<?= base_url('login') ?>" id="loginForm">
             <?= csrf_field() ?>
 
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
+            <!-- Success/Error Messages -->
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert alert-success">
+                    <?= session()->getFlashdata('success') ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="alert alert-error">
+                    <?= session()->getFlashdata('error') ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('message')): ?>
+                <div class="alert alert-success">
+                    <?= session()->getFlashdata('message') ?>
+                </div>
+            <?php endif; ?>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email Address</label>
                 <input 
                     type="email" 
-                    class="form-control <?= isset($validation) && $validation->hasError('email') ? 'is-invalid' : '' ?>" 
-                    name="email" id="email" 
-                    value="<?= old('email') ?>" required>
-                <?php if(isset($validation) && $validation->hasError('email')): ?>
-                    <div class="invalid-feedback"><?= $validation->getError('email') ?></div>
-                <?php endif; ?>
+                    id="email" 
+                    name="email" 
+                    value="<?= old('email') ?>"
+                    placeholder="imong gmail"
+                    required>
             </div>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
                 <input 
                     type="password" 
-                    class="form-control <?= isset($validation) && $validation->hasError('password') ? 'is-invalid' : '' ?>" 
-                    name="password" id="password" required>
-                <?php if(isset($validation) && $validation->hasError('password')): ?>
-                    <div class="invalid-feedback"><?= $validation->getError('password') ?></div>
-                <?php endif; ?>
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter your password"
+                    required>
             </div>
 
-            <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="showPassword" onclick="togglePassword()">
-                <label class="form-check-label" for="showPassword">Show Password</label>
+            <!-- Show Password Checkbox -->
+            <div class="checkbox-group">
+                <input 
+                    type="checkbox" 
+                    id="showPassword" 
+                    onclick="togglePassword()">
+                <label for="showPassword">Show Password</label>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button type="submit" class="submit-btn">Login</button>
+
+            <a href="<?= base_url('/') ?>" class="back-link">← Back to Home</a>
         </form>
 
-        <div class="mt-3 text-center">
-            <small>Don’t have an account? <a href="<?= site_url('register') ?>">Register here</a></small>
+        <div class="register-link">
+            Don't have an account? <a href="<?= base_url('register') ?>">Create one</a>
         </div>
-        <a href="<?= site_url('/') ?>" class="btn btn-sm btn-outline-secondary mb-2">&larr; Back</a>
     </div>
-                    
+
     <script>
         function togglePassword() {
             const password = document.getElementById("password");

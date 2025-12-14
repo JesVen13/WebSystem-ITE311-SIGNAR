@@ -28,7 +28,12 @@ class Auth extends Controller
         $userModel = new UserModel();
 
         $rules = [
-            'name'              => 'required|min_length[3]',
+            'name'              => [
+                'rules' => 'required|min_length[3]|regex_match[/^[a-zA-ZñÑ\s]+$/]',
+                'errors' => [
+                    'regex_match' => 'Name can only contain letters, spaces, and ñ/Ñ. No special characters or numbers allowed.'
+                ]
+            ],
             'email'             => 'required|valid_email|is_unique[users.email]',
             'password'          => 'required|min_length[6]',
             'password_confirm'  => 'required|matches[password]',
@@ -47,8 +52,16 @@ class Auth extends Controller
             $chosenRole = 'student';
         }
 
+        // Additional server-side check for name (extra security layer)
+        $name = $this->request->getPost('name');
+        if (!preg_match('/^[a-zA-ZñÑ\s]+$/', $name)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Name can only contain letters, spaces, and ñ/Ñ.');
+        }
+
         $data = [
-            'name'          => $this->request->getPost('name'),
+            'name'          => $name,
             'email'         => $this->request->getPost('email'),
             'password'      => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
             'role'          => $chosenRole,
@@ -67,6 +80,19 @@ class Auth extends Controller
     // =========================
     public function login()
     {
+        // Redirect if already logged in
+        if (session()->get('isLoggedIn')) {
+            $role = session()->get('role');
+            switch ($role) {
+                case 'admin':
+                    return redirect()->to(base_url('admin/dashboard'));
+                case 'teacher':
+                    return redirect()->to(base_url('teacher/dashboard'));
+                default:
+                    return redirect()->to(base_url('student/dashboard'));
+            }
+        }
+
         if ($this->request->getMethod() === 'post') {
             return $this->attemptLogin();
         }
